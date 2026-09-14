@@ -1,7 +1,7 @@
 {
   "name": "@ev-ry/fx",
   "version": "0.1.0-rc.1",
-  "private": true,
+  "private": false,
   "type": "module",
   "exports": {
     ".": {
@@ -45,5 +45,13 @@
   ],
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kbaghini/evry-fx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kbaghini/evry-fx/issues"
+  },
+  "homepage": "https://kbaghini.github.io/evry-fx/docs/"
 }

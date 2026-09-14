@@ -1,6 +1,6 @@
 # EV-RY FX Free 0.1.0-rc.1
 
-Preview release candidate from EV-RY. The Free edition uses the [MIT license](../LICENSE), and `@ev-ry/fx` is its selected package name. It has not been published to npm; public distribution is being prepared. The planned site [ev-ry.com/fx](https://ev-ry.com/fx) is not yet a verified live demo or download page.
+Public preview release candidate from EV-RY. The Free edition uses the [MIT license](../LICENSE). Package: `@ev-ry/fx`. Try the [live demo](https://kbaghini.github.io/evry-fx/docs/) or browse the [source and examples](https://github.com/kbaghini/evry-fx).
 
 The product is now EV-RY FX. Existing `THDFree`, `data-thd-*`, `createFree`, `loadFree` and `src/dom-*` names remain compatible. No behavior or API rename is implied by the branding change.
 

@@ -100,7 +100,7 @@ Normal/nowrap HTML whitespace is collapsed for raster text while DOM source offs
 
 See [the Persian quickstart](../QUICKSTART.fa.md), [script example](../examples/script.html) and [phone/history check](../examples/navigation.html). Serve examples over HTTP. The boot helper applies to manual reveal attachment as well; the main loader is not required when using the module API.
 
-Build specialization strips unused attachment entry points and effect graphs, with assertions that fail on incompatible source changes. It is not source protection: browser code is inspectable. This Free distribution is MIT licensed; see ../LICENSE and ../NOTICE.md. Public publication and CDN deployment are not completed. Third-party notices retain their original terms. The private full-product source and unpublished Pro code are outside this distribution.
+Build specialization strips unused attachment entry points and effect graphs, with assertions that fail on incompatible source changes. It is not source protection: browser code is inspectable. This Free distribution is MIT licensed; see ../LICENSE and ../NOTICE.md. Third-party notices retain their original terms. The private full-product source and unpublished Pro code are outside this distribution.
 
 
 ## Media additions
@@ -122,4 +122,4 @@ createFree defaults to auto routing with documentCanvas:true. Ordinary page effe
 
 ## Package identity
 
-EV-RY FX is published under the selected name `@ev-ry/fx` (not yet on npm). `THDFree`, `data-thd-*`, the `/thd/` example deployment directory and existing module filenames remain compatible technical identifiers. The deployment directory can be renamed as long as module/asset paths stay intact.
+EV-RY FX uses the package name `@ev-ry/fx`. `THDFree`, `data-thd-*`, the `/thd/` example deployment directory and existing module filenames remain compatible technical identifiers. The deployment directory can be renamed as long as module/asset paths stay intact.

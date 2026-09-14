@@ -1,16 +1,16 @@
-<p align="center"><img src="docs/assets/cover.svg" alt="EV-RY FX — Motion for the text and images already on your page." width="100%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/kbaghini/evry-fx/main/docs/assets/cover.svg" alt="EV-RY FX — Motion for the text and images already on your page." width="100%"></p>
 
 <h1 align="center">EV-RY FX</h1>
 
 <p align="center"><strong>Your HTML. Four particle effects. Native when still.</strong></p>
 
-<p align="center">Free edition · 0.1.0-rc.1 preview · <a href="LICENSE">MIT licensed</a> · JavaScript + TypeScript declarations</p>
+<p align="center">Free edition · 0.1.0-rc.1 preview · <a href="https://github.com/kbaghini/evry-fx/blob/main/LICENSE">MIT licensed</a> · JavaScript + TypeScript declarations</p>
 
 <p align="center">
   <a href="#quick-start">Quick start</a> ·
-  <a href="docs/index.html">Interactive demo files</a> ·
-  <a href="docs/GUIDE.md">Guide</a> ·
-  <a href="QUICKSTART.fa.md">راهنمای فارسی</a>
+  <a href="https://kbaghini.github.io/evry-fx/docs/">Live demo</a> ·
+  <a href="https://github.com/kbaghini/evry-fx/blob/main/docs/GUIDE.md">Guide</a> ·
+  <a href="https://github.com/kbaghini/evry-fx/blob/main/QUICKSTART.fa.md">راهنمای فارسی</a>
 </p>
 
 Add WebGL particle motion to existing headings, display text, images and supported SVG icons. EV-RY FX borrows their content and placement from the page, animates textured particles, then returns to native browser rendering.
@@ -19,9 +19,9 @@ Start with automatic scroll reveals, or attach selected elements through a small
 
 ## See it move
 
-![EV-RY FX motion preview](docs/assets/thd-preview.gif)
+![EV-RY FX motion preview](https://raw.githubusercontent.com/kbaghini/evry-fx/main/docs/assets/thd-preview.gif)
 
-The README shows an animated preview. Open the [interactive demo](docs/index.html) through an HTTP server to try the controls. The planned product site is [ev-ry.com/fx](https://ev-ry.com/fx); it is not yet a verified live demo or download page.
+The README shows an animated preview. Open the [live interactive demo](https://kbaghini.github.io/evry-fx/docs/) to try entry and exit effects on real text and images.
 
 ## What you get
 
@@ -38,17 +38,17 @@ The README shows an animated preview. Open the [interactive demo](docs/index.htm
 
 ## Quick start
 
-**This is a preview.** `@ev-ry/fx` is the selected name for the Free package; it has not been published to npm. Install the supplied release archive while publication is being prepared.
+**Public preview: 0.1.0-rc.1.** Validate the supported content and layouts in your project before production use.
 
-Install the supplied archive from your project folder:
+Install from your project folder:
 
 ```sh
-npm install ./ev-ry-fx-0.1.0-rc.1.tgz
+npm install @ev-ry/fx
 ```
 
 ### Add a script
 
-Extract the archive and serve the complete `package` directory at `/thd/`. Preserve its modules and asset folders; this is not a single-file bundle.
+Serve the complete installed `node_modules/@ev-ry/fx` directory at `/thd/`. Preserve its modules and asset folders; this is not a single-file bundle.
 
 ```html
 <head>
@@ -64,7 +64,7 @@ Extract the archive and serve the complete `package` directory at `/thd/`. Prese
 </body>
 ```
 
-`data-thd-pending` prevents initial native paint before the entry effect; it does **not** select an element for attachment. Use it only on selected targets. The mask preserves space, is absent without JavaScript, and has a failure fallback. [First-paint setup, CSP and troubleshooting →](docs/GUIDE.md#first-paint-setup-avoid-an-initial-flash)
+`data-thd-pending` prevents initial native paint before the entry effect; it does **not** select an element for attachment. Use it only on selected targets. The mask preserves space, is absent without JavaScript, and has a failure fallback. [First-paint setup, CSP and troubleshooting →](https://github.com/kbaghini/evry-fx/blob/main/docs/GUIDE.md#first-paint-setup-avoid-an-initial-flash)
 
 The classic loader uses an existing `window.THREE` or loads the bundled Three.js r158 asset. Serve examples over HTTP, not `file://`. Existing `THDFree`, `data-thd-*` and `src/dom-*` API/file names are retained in this release.
 
@@ -92,18 +92,18 @@ const title = free.attachText(document.querySelector('.title'), {
 
 Importing the loader does not initialize the page. Its first call chooses automatic initialization; repeated calls share that initialization. Use `auto:true` for automatic scanning, or `auto:false` with `api.create()` for manual ownership. Do not attach the same element both ways.
 
-For direct ownership with injected Three.js, `createFree` is also exported from `@ev-ry/fx`. See the [API and lifecycle guide](docs/GUIDE.md).
+For direct ownership with injected Three.js, `createFree` is also exported from `@ev-ry/fx`. See the [API and lifecycle guide](https://github.com/kbaghini/evry-fx/blob/main/docs/GUIDE.md).
 
 ## Examples and guide
 
 | Start here | What it demonstrates |
 | --- | --- |
-| [Script example](examples/script.html) | Automatic heading entry, including the early mask |
-| [Navigation example](examples/navigation.html) | Back/forward navigation and page lifecycle |
-| [React example](examples/AnimatedTitle.jsx) | A string title with effect cleanup and StrictMode handling |
-| [Detailed guide](docs/GUIDE.md) | SVG, image swaps, selectors, thresholds, canvas routing and troubleshooting |
-| [Persian quickstart](QUICKSTART.fa.md) | Installation and integration notes in Persian |
-| [Release notes](docs/RELEASE-NOTES.md) | Changes, tested scope and remaining limits |
+| [Script example](https://github.com/kbaghini/evry-fx/blob/main/examples/script.html) | Automatic heading entry, including the early mask |
+| [Navigation example](https://github.com/kbaghini/evry-fx/blob/main/examples/navigation.html) | Back/forward navigation and page lifecycle |
+| [React example](https://github.com/kbaghini/evry-fx/blob/main/examples/AnimatedTitle.jsx) | A string title with effect cleanup and StrictMode handling |
+| [Detailed guide](https://github.com/kbaghini/evry-fx/blob/main/docs/GUIDE.md) | SVG, image swaps, selectors, thresholds, canvas routing and troubleshooting |
+| [Persian quickstart](https://github.com/kbaghini/evry-fx/blob/main/QUICKSTART.fa.md) | Installation and integration notes in Persian |
+| [Release notes](https://github.com/kbaghini/evry-fx/blob/main/docs/RELEASE-NOTES.md) | Changes, tested scope and remaining limits |
 
 ## A few useful boundaries
 
@@ -113,4 +113,4 @@ For direct ownership with injected Three.js, `createFree` is also exported from 
 - SVG support is a static shape/path subset. Unsupported SVG/CSS and images blocked by canvas CORS restrictions can remain native.
 - This Free build does not include editable inputs, arbitrary effect customization or a dedicated React/Vue component pack.
 
-EV-RY FX Free is [MIT licensed](LICENSE). Bundled dependencies retain their own licenses and [notices](NOTICE.md). This license covers the Free distribution; other editions are separate.
+EV-RY FX Free is [MIT licensed](https://github.com/kbaghini/evry-fx/blob/main/LICENSE). Bundled dependencies retain their own licenses and [notices](https://github.com/kbaghini/evry-fx/blob/main/NOTICE.md). This license covers the Free distribution; other editions are separate.

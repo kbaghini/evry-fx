@@ -1,0 +1,49 @@
+{
+  "name": "@ev-ry/fx",
+  "version": "0.1.0-rc.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/dom-free.d.ts",
+      "import": "./src/dom-free.js"
+    },
+    "./script": {
+      "types": "./src/dom-free-loader.d.ts",
+      "import": "./src/dom-free-loader.js"
+    },
+    "./classic-script": "./src/dom-free-script.js"
+  },
+  "files": [
+    "src",
+    "assets",
+    "examples",
+    "README.md",
+    "LICENSE",
+    "NOTICE.md",
+    "QUICKSTART.fa.md",
+    "docs/GUIDE.md",
+    "docs/RELEASE-NOTES.md",
+    "build-report.json"
+  ],
+  "description": "Textured particle effects for existing HTML text, images and SVG. Native when still.",
+  "license": "MIT",
+  "author": {
+    "name": "Kamran Baghini",
+    "url": "https://ev-ry.com"
+  },
+  "keywords": [
+    "animation",
+    "particles",
+    "webgl",
+    "text-effects",
+    "image-effects",
+    "scroll-reveal",
+    "svg",
+    "rtl",
+    "ev-ry"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

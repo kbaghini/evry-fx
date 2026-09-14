@@ -1,0 +1,328 @@
+{
+  "version": "0.1.0-rc.1",
+  "effects": [
+    "dust-wind",
+    "smoke",
+    "drifting-snow",
+    "melt"
+  ],
+  "files": [
+    {
+      "file": "src/dom-reveal-boot.js",
+      "bytes": 580,
+      "gzip": 353
+    },
+    {
+      "file": "src/dom-free.js",
+      "bytes": 3047,
+      "gzip": 1159
+    },
+    {
+      "file": "src/dom-attachment.js",
+      "bytes": 9834,
+      "gzip": 3001
+    },
+    {
+      "file": "src/dom-reveal.js",
+      "bytes": 6042,
+      "gzip": 2310
+    },
+    {
+      "file": "src/dom-svg-surface.js",
+      "bytes": 4873,
+      "gzip": 1994
+    },
+    {
+      "file": "src/dom-image-surface.js",
+      "bytes": 10611,
+      "gzip": 3666
+    },
+    {
+      "file": "src/image-surface.js",
+      "bytes": 11834,
+      "gzip": 4227
+    },
+    {
+      "file": "src/motion-envelope.js",
+      "bytes": 886,
+      "gzip": 456
+    },
+    {
+      "file": "src/image-source.js",
+      "bytes": 4013,
+      "gzip": 1776
+    },
+    {
+      "file": "src/raster-texture-mesh.js",
+      "bytes": 2592,
+      "gzip": 1150
+    },
+    {
+      "file": "src/raster-texture-material.js",
+      "bytes": 4981,
+      "gzip": 1903
+    },
+    {
+      "file": "src/text-mesh-density.js",
+      "bytes": 2147,
+      "gzip": 1007
+    },
+    {
+      "file": "src/mesh-generator-core.js",
+      "bytes": 8403,
+      "gzip": 3519
+    },
+    {
+      "file": "src/font-mesh-engine.js",
+      "bytes": 19194,
+      "gzip": 5583
+    },
+    {
+      "file": "src/text-direction.js",
+      "bytes": 1057,
+      "gzip": 619
+    },
+    {
+      "file": "assets/vendor/bidi.min.js",
+      "bytes": 11924,
+      "gzip": 5753
+    },
+    {
+      "file": "src/triangle-coverage.js",
+      "bytes": 1211,
+      "gzip": 636
+    },
+    {
+      "file": "src/triangle-effect.js",
+      "bytes": 13694,
+      "gzip": 4287
+    },
+    {
+      "file": "src/particle-centers.js",
+      "bytes": 2936,
+      "gzip": 1069
+    },
+    {
+      "file": "src/text-edit-motions.js",
+      "bytes": 2068,
+      "gzip": 1035
+    },
+    {
+      "file": "src/text-motion-recipes.js",
+      "bytes": 4883,
+      "gzip": 1895
+    },
+    {
+      "file": "src/text-motion-programs.js",
+      "bytes": 3367,
+      "gzip": 897
+    },
+    {
+      "file": "src/text-effect-options.js",
+      "bytes": 2309,
+      "gzip": 1052
+    },
+    {
+      "file": "src/text-effect-path.js",
+      "bytes": 2924,
+      "gzip": 1132
+    },
+    {
+      "file": "src/text-motion-primitives.js",
+      "bytes": 4430,
+      "gzip": 1894
+    },
+    {
+      "file": "src/text-motion-contour.js",
+      "bytes": 1449,
+      "gzip": 666
+    },
+    {
+      "file": "src/triangle-motion-frame.js",
+      "bytes": 2124,
+      "gzip": 870
+    },
+    {
+      "file": "src/dom-image-raster.js",
+      "bytes": 1916,
+      "gzip": 870
+    },
+    {
+      "file": "src/image-preparation-queue.js",
+      "bytes": 1159,
+      "gzip": 573
+    },
+    {
+      "file": "src/dom-image-swap.js",
+      "bytes": 3050,
+      "gzip": 1225
+    },
+    {
+      "file": "src/dom-once.js",
+      "bytes": 3023,
+      "gzip": 1143
+    },
+    {
+      "file": "src/render-owner.js",
+      "bytes": 3954,
+      "gzip": 1456
+    },
+    {
+      "file": "src/viewport-render-owner.js",
+      "bytes": 24414,
+      "gzip": 7399
+    },
+    {
+      "file": "src/viewport-clip.js",
+      "bytes": 6751,
+      "gzip": 2611
+    },
+    {
+      "file": "src/dom-text-surface.js",
+      "bytes": 18914,
+      "gzip": 6011
+    },
+    {
+      "file": "src/hybrid-text-flow.js",
+      "bytes": 3717,
+      "gzip": 1689
+    },
+    {
+      "file": "src/runtime-font-engine.js",
+      "bytes": 12202,
+      "gzip": 3758
+    },
+    {
+      "file": "src/font-rasterizer.js",
+      "bytes": 3539,
+      "gzip": 1322
+    },
+    {
+      "file": "src/native-run-shaping.js",
+      "bytes": 2997,
+      "gzip": 1269
+    },
+    {
+      "file": "src/text-scene.js",
+      "bytes": 13688,
+      "gzip": 3998
+    },
+    {
+      "file": "src/motion.js",
+      "bytes": 1802,
+      "gzip": 691
+    },
+    {
+      "file": "src/text-edit-effect.js",
+      "bytes": 7704,
+      "gzip": 2580
+    },
+    {
+      "file": "src/insertion-range.js",
+      "bytes": 1858,
+      "gzip": 667
+    },
+    {
+      "file": "src/text-motion-character-centers.js",
+      "bytes": 4688,
+      "gzip": 1722
+    },
+    {
+      "file": "src/runtime-lifecycle.js",
+      "bytes": 848,
+      "gzip": 408
+    },
+    {
+      "file": "src/dom-surface-font.js",
+      "bytes": 3246,
+      "gzip": 1251
+    },
+    {
+      "file": "src/dom-raster-cache.js",
+      "bytes": 1677,
+      "gzip": 793
+    },
+    {
+      "file": "src/dom-rich-text.js",
+      "bytes": 11269,
+      "gzip": 4185
+    },
+    {
+      "file": "src/dom-text-runs.js",
+      "bytes": 3091,
+      "gzip": 1371
+    },
+    {
+      "file": "src/dom-text-fingerprint.js",
+      "bytes": 2060,
+      "gzip": 1005
+    },
+    {
+      "file": "src/dom-auto-route.js",
+      "bytes": 1884,
+      "gzip": 751
+    },
+    {
+      "file": "src/dom-auto-reveal.js",
+      "bytes": 3351,
+      "gzip": 1426
+    },
+    {
+      "file": "src/dom-free-script.js",
+      "bytes": 584,
+      "gzip": 357
+    },
+    {
+      "file": "src/dom-free-bootstrap.js",
+      "bytes": 2095,
+      "gzip": 946
+    },
+    {
+      "file": "assets/vendor/three.min.js",
+      "bytes": 651651,
+      "gzip": 162725
+    },
+    {
+      "file": "src/dom-free-loader.js",
+      "bytes": 593,
+      "gzip": 361
+    },
+    {
+      "file": "src/dom-free-loader.d.ts",
+      "bytes": 596,
+      "gzip": 331
+    },
+    {
+      "file": "src/dom-free.d.ts",
+      "bytes": 1259,
+      "gzip": 587
+    },
+    {
+      "file": "src/dom-auto-reveal.d.ts",
+      "bytes": 710,
+      "gzip": 418
+    },
+    {
+      "file": "src/dom-attachment.d.ts",
+      "bytes": 4471,
+      "gzip": 1373
+    },
+    {
+      "file": "assets/vendor/three-LICENSE.txt",
+      "bytes": 1081,
+      "gzip": 666
+    },
+    {
+      "file": "assets/vendor/bidi-LICENSE.txt",
+      "bytes": 1071,
+      "gzip": 650
+    },
+    {
+      "file": "assets/fonts/Estedad-OFL.txt",
+      "bytes": 4388,
+      "gzip": 1971
+    }
+  ],
+  "bytes": 954714,
+  "gzipSum": 274468
+}

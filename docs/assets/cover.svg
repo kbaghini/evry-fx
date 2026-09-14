@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs><linearGradient id="panel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d9f1e5"/><stop offset="1" stop-color="#a3cbb9"/></linearGradient></defs>
+  <rect width="1280" height="720" rx="28" fill="#142c38"/>
+  <path d="M56 67h24l12 21-12 21H56l12-21Z" fill="#b5dfcc"/>
+  <text x="110" y="99" fill="#f6f2e8" font-family="Arial,Helvetica,sans-serif" font-size="29" font-weight="700" letter-spacing="1">EV-RY FX</text>
+  <rect x="1088" y="61" width="134" height="43" rx="21.5" fill="none" stroke="#637b7e"/>
+  <text x="1155" y="89" text-anchor="middle" fill="#bedfd0" font-family="Arial,Helvetica,sans-serif" font-size="15" letter-spacing="1.8">FREE EDITION</text>
+  <text x="58" y="281" fill="#f6f2e8" font-family="Arial,Helvetica,sans-serif" font-size="98" font-weight="700" letter-spacing="-5">Make it</text>
+  <text x="58" y="390" fill="#b5dfcc" font-family="Arial,Helvetica,sans-serif" font-size="98" font-weight="700" letter-spacing="-5">memorable.</text>
+  <text x="62" y="475" fill="#d4ded8" font-family="Arial,Helvetica,sans-serif" font-size="29">Particle effects for your existing HTML.</text>
+  <text x="62" y="615" fill="#aac1b9" font-family="Arial,Helvetica,sans-serif" font-size="15" letter-spacing="2">TEXT + IMAGES</text>
+  <circle cx="240" cy="609" r="3" fill="#ed977e"/>
+  <text x="262" y="615" fill="#aac1b9" font-family="Arial,Helvetica,sans-serif" font-size="15" letter-spacing="2">NATIVE AT REST</text>
+  <g transform="translate(790 203)">
+    <rect width="420" height="344" rx="24" fill="url(#panel)"/>
+    <circle cx="331" cy="75" r="39" fill="#ef947b"/>
+    <path d="M70 289V129a91 91 0 0 1 182 0v160h-54V132a37 37 0 0 0-74 0v157Z" fill="#23454b"/>
+    <path d="M70 289V129a91 91 0 0 1 91-91v54a37 37 0 0 0-37 40v157Z" fill="#3a6260"/>
+    <rect x="246" y="244" width="100" height="45" rx="22" fill="#f8f3e7"/>
+    <path d="m323 152 34 20-34 20Z" fill="#f3a78e"/>
+    <circle cx="283" cy="123" r="5" fill="#f8f3e7"/>
+  </g>
+  <g fill="#b5dfcc">
+    <path d="m734 255 15 8-15 9Z"/><path d="m718 317 10 6-10 6Z"/><path d="m747 373 18 10-18 10Z"/><path d="m759 435 12 7-12 7Z"/>
+  </g>
+  <g fill="#ed977e"><path d="m733 469 11 6-11 7Z"/><path d="m773 291 10 5-10 6Z"/></g>
+  <path d="M60 658h1160" stroke="#38515a"/>
+</svg>

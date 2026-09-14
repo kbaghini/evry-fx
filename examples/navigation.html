@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="../src/dom-reveal-boot.js"></script>
+  <title>THD — بررسی نهایی روی گوشی</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f4f3ee;color:#234a42;font:18px/1.9 Tahoma,Arial}main{max-width:760px;margin:auto;padding:24px}h1{font-size:clamp(30px,7vw,48px);line-height:1.6}h2{font-size:28px}img{display:block;width:100%;height:230px;object-fit:cover;border-radius:18px}a,button{font:inherit;display:inline-block;color:inherit;background:white;border:1px solid #8aaba0;border-radius:10px;padding:9px 16px;text-decoration:none;cursor:pointer}section{padding:40px 0}.space{height:65vh}.note{font-size:15px;color:#526d65}#status{padding:10px 0;min-height:48px}
+  </style>
+</head>
+<body><main>
+  <div data-thd-ignore><strong>بررسی نهایی روی گوشی</strong><p class="note">ابتدا متن و تصویر را ببینید، پایین بروید و برگردید. سپس صفحهٔ دوم را باز کنید و با دکمهٔ Back مرورگر برگردید.</p></div>
+  <h1 data-thd-pending>جزئیات کوچک، حس بهتر</h1>
+  <img data-thd-image data-thd-pending width="640" height="360" alt="طرح سبز و طلایی"
+       src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='360'%3E%3Crect width='640' height='360' fill='%23476f64'/%3E%3Ccircle cx='320' cy='180' r='115' fill='%23e3bd88'/%3E%3C/svg%3E">
+  <section data-thd-ignore>
+    <a href="navigation-away.html">رفتن به صفحهٔ دوم</a>
+    <button id="add" type="button">نمایش عنوان تازه</button>
+    <p id="status" role="status">در حال آماده‌شدن…</p>
+    <p class="note">بعد از بازگشت، «نمایش عنوان تازه» باید همچنان افکت اجرا کند. عنوان‌های قبلی فقط بار اول افکت دارند.</p>
+  </section>
+  <div id="new-content"></div>
+  <div class="space"></div>
+  <section><h2>ادامهٔ یک تجربهٔ روان</h2><p class="note">اسکرول و تغییر جهت گوشی نباید متن یا تصویر را برای همیشه مخفی کند.</p></section>
+</main>
+<script src="../src/dom-free-script.js" data-thd-auto defer></script>
+<script>
+  let api,sequence=0;
+  function status(){if(api)document.querySelector('#status').textContent=api.instance.stats().disposed?'اتصال غیرفعال است؛ نتیجه را گزارش کنید.':'آمادهٔ آزمون';}
+  window.addEventListener('DOMContentLoaded',async()=>{
+    api=await THDFree.ready;status();
+    document.querySelector('#add').onclick=()=>{
+      const title=document.createElement('h2');title.textContent='عنوان تازه '+(++sequence);title.dataset.thdPending='';document.querySelector('#new-content').replaceChildren(title);
+      api.instance.refresh();title.scrollIntoView({block:'center'});status();
+    };
+  });
+  window.addEventListener('pageshow',()=>queueMicrotask(status));
+</script></body></html>

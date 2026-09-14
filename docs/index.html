@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#142c38">
+  <meta name="description" content="Try EV-RY FX Free: particle effects for your existing HTML text and images, with native content at rest.">
+  <meta property="og:title" content="EV-RY FX — Particle effects for your existing HTML">
+  <meta property="og:image" content="assets/cover.svg">
+  <title>EV-RY FX — A little motion. A different feeling.</title>
+  <style>
+    :root{color-scheme:light;--ink:#142c38;--muted:#62726d;--paper:#f7f5ee;--mint:#b5dfcc;--line:#d9ded4;--coral:#ed977e}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
+    button,a{-webkit-tap-highlight-color:transparent}button{font:inherit}a{color:inherit;text-underline-offset:4px}button:focus-visible,a:focus-visible{outline:3px solid #cb694f;outline-offset:4px}
+    .shell{width:min(1120px,calc(100% - 64px));margin-inline:auto}.header{display:flex;justify-content:space-between;align-items:center;gap:22px;padding-block:28px;border-bottom:1px solid var(--line)}
+    .brand{display:inline-flex;align-items:center;gap:12px;text-decoration:none;font-size:20px;font-weight:700;letter-spacing:-.7px}.brand svg{width:31px;height:34px;flex:none}.edition{font-size:11px;font-weight:600;letter-spacing:1.4px;border:1px solid var(--line);border-radius:999px;padding:5px 9px;margin-left:5px}
+    .header nav{display:flex;gap:25px;font-size:13px}.header nav a{text-decoration:none}.header nav a:hover{text-decoration:underline}.intro{padding:62px 0 35px;max-width:820px}.eyebrow{display:flex;align-items:center;gap:9px;margin:0 0 16px;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase}.dot{width:7px;height:7px;border-radius:50%;background:#679c85}
+    h1{font-size:clamp(38px,5.6vw,66px);line-height:1.04;letter-spacing:-3px;margin:0 0 22px;font-weight:600;max-width:790px}.intro p:last-child{font-size:17px;line-height:1.6;color:var(--muted);max-width:640px;margin:0}
+    .demo-top{display:flex;justify-content:space-between;align-items:center;gap:18px;padding-block:16px 21px}.section-label{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;font-weight:700}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.button{border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);padding:9px 15px;cursor:pointer;font-size:13px;font-weight:600;line-height:1.3;transition:background .15s,border-color .15s}.button:hover{background:#ebece3;border-color:#a5b6a9}.button.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}.button.primary:hover{background:#31535b}.button:disabled{cursor:wait;opacity:.5}.button.quiet{font-weight:400}
+    .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.card{min-width:0;border:1px solid var(--line);border-radius:18px;background:#eeeee5;position:relative}.text-card{background:#dcebe1}.card-header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:20px 24px}.card-kind{font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase}.card-number{font-size:11px;color:#72877d;font-variant-numeric:tabular-nums}
+    .text-stage{min-height:273px;padding:30px 28px 38px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:20px}.text-stage p{margin:0;font-size:11px;color:#587468;letter-spacing:1px}.text-target{display:block;font:600 clamp(34px,4vw,49px)/1.08 Arial,Helvetica,sans-serif;letter-spacing:-1.6px;margin:0;max-width:100%;color:#163d37}
+    .image-stage{padding:0 24px 20px;min-height:273px;display:flex;align-items:center;justify-content:center}.image-stage img{display:block;width:100%;height:253px;object-fit:contain;object-position:50% 50%;border:0;padding:0}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:15px 22px;border-top:1px solid #cddbd1;font-size:11px;color:#52675d}.card-footer span{line-height:1.65}.card-actions{display:flex;gap:6px}.card-actions .button{padding:7px 10px;font-size:11px;border-color:#b8cabe;background:transparent}
+    .status-row{min-height:50px;display:flex;align-items:center;justify-content:space-between;gap:14px;color:var(--muted);font-size:12px;padding:13px 2px}.status-row p{margin:0}.status-hint{white-space:nowrap;color:#76847d}.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;border-top:1px solid var(--line);margin-top:34px;padding-block:32px 42px}.detail-grid h2{font-size:14px;margin:0 0 8px}.detail-grid p{margin:0;color:var(--muted);font-size:13px;line-height:1.7}.code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;background:#ebece3;border:1px solid var(--line);padding:2px 6px;border-radius:4px}.footer{border-top:1px solid var(--line);padding:22px 0 30px;display:flex;justify-content:space-between;gap:24px;color:var(--muted);font-size:12px}.footer p{margin:0}.footer a{white-space:nowrap}
+    @media(max-width:740px){.shell{width:min(560px,calc(100% - 36px))}.header{padding-block:20px}.header nav{gap:16px}.header nav .readme-link{display:none}.intro{padding:42px 0 24px}h1{letter-spacing:-1.8px}.intro p:last-child{font-size:15px}.demo-top{align-items:flex-start;flex-direction:column;gap:12px}.demo-grid{grid-template-columns:1fr}.text-stage{min-height:225px;padding:24px}.text-target{font-size:43px}.image-stage{min-height:255px}.image-stage img{height:245px}.detail-grid{grid-template-columns:1fr;gap:23px;margin-top:20px;padding-block:26px}.status-row{align-items:flex-start;flex-direction:column;gap:4px}.footer{flex-direction:column;gap:9px}.brand{font-size:18px}.edition{font-size:9px;margin-left:0}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+  </style>
+</head>
+<body id="top">
+  <header class="header shell">
+    <a class="brand" href="#top" aria-label="EV-RY FX home"><svg viewBox="0 0 31 34" aria-hidden="true"><path d="M0 0h20l11 17-11 17H0l11-17Z" fill="#142c38"/><path d="m5 0 11 17L5 34h9l11-17L14 0Z" fill="#a9d5bd"/></svg>EV-RY FX <span class="edition">FREE</span></a>
+    <nav aria-label="Resources"><a href="GUIDE.md">Usage guide ↗</a><a class="readme-link" href="../README.md">About the package ↗</a></nav>
+  </header>
+  <main class="shell">
+    <section id="capture" aria-labelledby="page-title">
+      <div class="intro">
+        <p class="eyebrow"><span class="dot" aria-hidden="true"></span> A little motion. A different feeling.</p>
+        <h1 id="page-title">Particle effects for<br>your existing HTML.</h1>
+        <p>Let your words drift in. Let your images fall into place.<br>Then give the page back to the browser.</p>
+      </div>
+      <div class="demo-top">
+        <span class="section-label">Try the real thing</span>
+        <div class="toolbar" aria-label="Animate both examples">
+          <button id="play-enter" class="button primary" type="button" disabled>Assemble both <span aria-hidden="true">↗</span></button>
+          <button id="play-exit" class="button" type="button" disabled>Disperse both</button>
+          <button id="reset-demo" class="button quiet" type="button" disabled>Reset</button>
+        </div>
+      </div>
+      <div id="demo-stage" class="demo-grid">
+        <article class="card text-card" aria-labelledby="text-label">
+          <header class="card-header"><span id="text-label" class="card-kind">Text</span><span class="card-number">01 / 02</span></header>
+          <div class="text-stage"><p>YOUR WORDS, WITH A LITTLE WONDER.</p><h2 id="text-target" class="text-target">Hello,<br>extraordinary.</h2></div>
+          <footer class="card-footer"><span>Wind in.<br>Smoke out.</span><div class="card-actions"><button id="text-enter" class="button" type="button" disabled aria-label="Assemble text with wind">Assemble</button><button id="text-exit" class="button" type="button" disabled aria-label="Disperse text as smoke">Disperse</button></div></footer>
+        </article>
+        <article class="card image-card" aria-labelledby="image-label">
+          <header class="card-header"><span id="image-label" class="card-kind">Image</span><span class="card-number">02 / 02</span></header>
+          <div class="image-stage"><img id="image-target" src="assets/demo-art.svg" width="560" height="420" alt="A dark green arch, a coral sun and small geometric shapes on a mint landscape."></div>
+          <footer class="card-footer"><span>Snow in.<br>Melt out.</span><div class="card-actions"><button id="image-enter" class="button" type="button" disabled aria-label="Assemble image with snow">Assemble</button><button id="image-exit" class="button" type="button" disabled aria-label="Disperse image with melt">Disperse</button></div></footer>
+        </article>
+      </div>
+      <div class="status-row"><p id="demo-status" role="status" aria-live="polite">Preparing the live demo…</p><span class="status-hint">4 presets · Native at rest</span></div>
+      <noscript><p>The examples remain readable without JavaScript. Enable JavaScript to try the particle effects.</p></noscript>
+    </section>
+    <section class="detail-grid" aria-label="What this demo uses">
+      <div><h2>Keep your HTML.</h2><p>The text and image above are ordinary elements. EV-RY FX adds their visual transition; your page keeps its content and semantics.</p></div>
+      <div><h2>Four focused effects.</h2><p>Free includes wind and smoke for text, snow and melt for images. Each effect uses the same two-second duration.</p></div>
+      <div><h2>Make it your own page.</h2><p>Use the script loader or the module API. Explore attachment, viewport entry and cleanup in the <a href="GUIDE.md">usage guide</a>.</p></div>
+    </section>
+  </main>
+  <footer class="footer shell"><p>EV-RY FX Free · Package: <span class="code">@ev-ry/fx</span></p><p>Preview release. Package publication is being prepared.</p></footer>
+  <script type="module">
+    const status=document.querySelector('#demo-status'),buttons=[...document.querySelectorAll('button')];
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+    let owner,surfaces=[],timer=null,disposed=false;
+    function message(text){status.textContent=text;}
+    function restMessage(){message(reduced.matches?'Reduced motion is enabled. Transitions settle immediately.':'Ready. Choose an effect above.');}
+    function finishWhenSettled(label,selected){
+      clearTimeout(timer);const start=performance.now();let seenMotion=false;
+      function inspect(){
+        if(disposed)return;
+        const states=selected.map(surface=>surface.stats()),active=states.some(s=>s.image?.active||s.effect?.active||s.rich?.active||s.pending||s.preparing);
+        seenMotion ||= active;
+        if(active||!seenMotion&&!reduced.matches&&performance.now()-start<200){timer=setTimeout(inspect,80);return;}
+        message(reduced.matches?'Reduced motion is enabled. Transition complete.':label==='enter'?'Assembled. The browser is displaying the content again.':'Dispersed. Select Assemble or Reset to bring the content back.');
+      }
+      timer=setTimeout(inspect,80);
+    }
+    function play(phase,indices=[0,1]){
+      if(disposed||!surfaces.length)return;
+      const selected=indices.map(index=>surfaces[index]);
+      message(phase==='enter'?'Assembling…':'Dispersing…');
+      for(const surface of selected)surface.play(phase);
+      finishWhenSettled(phase,selected);
+    }
+    function reset(){clearTimeout(timer);for(const surface of surfaces)surface.cancel();restMessage();}
+    function destroy(){if(disposed)return;disposed=true;clearTimeout(timer);owner?.destroy();}
+    async function start(){
+      try{
+        const {loadFree}=await import('../src/dom-free-loader.js');
+        const api=await loadFree({auto:false});if(disposed)return;
+        owner=api.create(document,{auto:false});
+        surfaces=[owner.attachText(document.querySelector('#text-target')),owner.attachImage(document.querySelector('#image-target'))];
+        await Promise.all(surfaces.map(surface=>surface.ready));if(disposed)return;
+        const unsupported=surfaces.map(surface=>surface.stats()).filter(state=>state.mode!=='mesh'&&state.reason&&!/native resting presentation|not visible|not connected/i.test(state.reason));
+        if(unsupported.length)throw Error('The current browser or layout cannot render this example.');
+        buttons.forEach(button=>button.disabled=false);restMessage();
+        // An inspectable handle for documentation captures and smoke checks.
+        window.evryFxDemo={owner,surfaces,play,reset,ready:true};
+      }catch(error){destroy();message('The effects could not start here. The original content is still available.');console.error('EV-RY FX demo:',error);}
+    }
+    document.querySelector('#play-enter').addEventListener('click',()=>play('enter'));
+    document.querySelector('#play-exit').addEventListener('click',()=>play('exit'));
+    document.querySelector('#reset-demo').addEventListener('click',reset);
+    for(const [id,phase,index] of [['text-enter','enter',0],['text-exit','exit',0],['image-enter','enter',1],['image-exit','exit',1]])document.getElementById(id).addEventListener('click',()=>play(phase,[index]));
+    reduced.addEventListener('change',reset);
+    addEventListener('pagehide',event=>{if(!event.persisted){reduced.removeEventListener('change',reset);destroy();}});
+    addEventListener('pageshow',event=>{if(event.persisted&&!disposed)owner?.refresh();});
+    start();
+  </script>
+</body>
+</html>

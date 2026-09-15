@@ -178,15 +178,21 @@ export function createViewportRenderOwner(THREE,document,{escapeEffects=true,zIn
       if(lease.dead||!lease.scene||!lease.width||!lease.height||!lease.needsPaint&&!localLayoutDirty)continue;
       lease.needsPaint=false;
       const canvas=localCanvas(lease),ratio=lease.ratio||1;
-      renderer.setPixelRatio(ratio);renderer.setSize(lease.width,lease.height,false);
-      renderer.setViewport(0,0,lease.width,lease.height);renderer.setScissorTest(false);renderer.clear(true,true,true);
+      // Local leases share a stable physical-pixel scratch buffer.
+      const pw=Math.floor(lease.width*ratio),ph=Math.floor(lease.height*ratio);
+      if(bufferRatio!==1){renderer.setPixelRatio(1);bufferRatio=1;}
+      if(pw>bufferWidth||ph>bufferHeight){bufferWidth=Math.max(bufferWidth,pw);bufferHeight=Math.max(bufferHeight,ph);renderer.setSize(bufferWidth,bufferHeight,false);}
+      // Clear the entire retained buffer, not only this lease's viewport:
+      // cropped canvas copies must never see pixels from a previous lease.
+      renderer.setScissorTest(false);renderer.clear(true,true,true);
+      renderer.setViewport(0,0,pw,ph);renderer.setScissor(0,0,pw,ph);renderer.setScissorTest(true);
       setOpacity(lease.scene,Number(window.getComputedStyle(lease.surface).opacity));
       applyViewportClips(lease.scene,[],{left:0,bottom:lease.height},ratio);escapeUniforms(lease.scene,false);
       renderer.render(lease.scene,lease.camera);passes++;
       const copyStart=window.performance.now();
-      if(canvas.width!==renderer.domElement.width)canvas.width=renderer.domElement.width;
-      if(canvas.height!==renderer.domElement.height)canvas.height=renderer.domElement.height;
-      lease.localContext.clearRect(0,0,canvas.width,canvas.height);lease.localContext.drawImage(renderer.domElement,0,0);
+      if(canvas.width!==pw)canvas.width=pw;
+      if(canvas.height!==ph)canvas.height=ph;
+      lease.localContext.clearRect(0,0,canvas.width,canvas.height);lease.localContext.drawImage(renderer.domElement,0,bufferHeight-ph,pw,ph,0,0,pw,ph);
       copies++;copyMs+=window.performance.now()-copyStart;
     }
     localLayoutDirty=false;renderMs+=window.performance.now()-start;frames++;

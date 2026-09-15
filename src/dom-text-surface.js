@@ -8,6 +8,7 @@ import {normalizeTextEffectOptions} from './text-effect-options.js';
 import {adoptDOMFont,domFontAtSize,matchesDOMFont} from './dom-surface-font.js';
 import {DOMRichText} from './dom-rich-text.js';
 import {createDOMTextFingerprint} from './dom-text-fingerprint.js';
+import {createTextPaintMask} from './dom-text-paint-mask.js';
 
 // Presentation attachment: the original text node, parent control and semantics
 // remain owned by the host. The deliberately narrow first contract is a plain,
@@ -24,7 +25,8 @@ export function attachTextSurface(element,THREE,options={}){
   let enabled=options.enabled!==false,renderer,canvas,engine,view,effect,scene,content,camera;
   let frame=null,revision=0,preparing=false,dirty=true,layout=null,committed=null,reason=null,fatal=false,intersecting=true;
   let mode='native',draws=0,builds=0,submittedSize='',pendingPhase=options.initialPhase??null,phase='enter',lastSeed=null;
-  let effectStarted=null,pendingStarted=null;
+  let effectStarted=null,pendingStarted=null,settleStarted=null;
+  let nativeMask;
   function preserveMotion(){if(pendingPhase===null&&effectStarted!==null&&window.performance.now()-effectStarted<settings.duration){pendingPhase=phase;pendingStarted=effectStarted;}}
   let resolveReady;const ready=new Promise(resolve=>{resolveReady=resolve;});
   let rich=null;
@@ -44,9 +46,12 @@ export function attachTextSurface(element,THREE,options={}){
     }
     ownedStyle.delete(name);originalStyle.delete(name);
   }
+  function exitOwnsPaint(why=reason){return (pendingPhase??phase)==='exit'&&!fatal&&enabled&&!forced.matches&&(!why||/not visible|not connected|native resting presentation|hidden after exit/i.test(why));}
   function native(why=null){
+    nativeMask?.release();
     rich?.restore();
     mode='native';reason=why;restoreStyle('-webkit-text-fill-color');restoreStyle('text-shadow');
+    if(exitOwnsPaint(why))nativeMask?.hold();
     if(canvas)canvas.style.display='none';
     renderer?.invalidate?.();
   }
@@ -56,9 +61,26 @@ export function attachTextSurface(element,THREE,options={}){
     resolveReady({mode,reason});
   }
   function request(){if(!life.disposed&&!fatal&&!document.hidden&&intersecting&&frame===null)frame=window.requestAnimationFrame(render);}
-  function suspend(){if(frame!==null)window.cancelAnimationFrame(frame);frame=null;if(renderer?.globalCanvas)native('not visible');renderer?.invalidate?.();}
+  function suspend(){
+    if(pendingPhase!==null&&pendingStarted===null)pendingStarted=window.performance.now();
+    if(frame!==null)window.cancelAnimationFrame(frame);frame=null;
+    const hideExit=exitOwnsPaint();
+    // The last canvas frame and restored native text must not flash on reentry.
+    // A queued/current exit owns native paint even while no frames are drawn.
+    if(renderer?.globalCanvas||hideExit)native(reason??'not visible');
+    if(canvas)canvas.style.display='none';renderer?.invalidate?.();
+  }
   function refresh(){
     if(life.disposed)return;revision++;dirty=true;request();
+  }
+  function play(next='enter'){
+    if(life.disposed)throw Error('Text surface disposed');if(!['enter','exit'].includes(next))throw TypeError('Expected enter or exit');
+    pendingPhase=next;if(next==='enter')lastSeed=null;const box=element.getBoundingClientRect();
+    const outside=box.bottom<=0||box.top>=window.innerHeight||box.right<=0||box.left>=window.innerWidth;
+    pendingStarted=document.hidden||!intersecting||outside?window.performance.now():null;
+    // Do not spend a cold preparation frame waiting for IO's first delivery.
+    if(outside&&window.IntersectionObserver)intersecting=false;
+    if(document.hidden||!intersecting)suspend();refresh();
   }
   function slot(){
     const children=[...element.childNodes].filter(node=>node!==canvas&&node.nodeType!==8);
@@ -131,6 +153,7 @@ export function attachTextSurface(element,THREE,options={}){
       if(life.disposed||version!==revision)return;
       const next=measure(current,collectCharacters);
       if(next.reason){effect.cancel();native(next.reason);resolveReady({mode,reason});return;}
+      engine.rasterizer.displayFontSize=next.size;
       const densityChanged=engine.setDisplayFontSize(next.size);
       if(changed||densityChanged||!layout||next.key!==layout.key){
         if(effect.active)preserveMotion();
@@ -147,6 +170,7 @@ export function attachTextSurface(element,THREE,options={}){
   }
   function beginEffect(now){
     if(pendingPhase===null||!layout)return;
+    settleStarted=null;
     const resuming=pendingStarted!==null;phase=pendingPhase;pendingPhase=null;now=pendingStarted??now;pendingStarted=null;effectStarted=now;content.visible=true;
     if(rich){if(!resuming&&phase==='enter'||lastSeed===null)lastSeed=effect.randomSeed();rich.play(phase,reduced.matches?'none':effectName,settings,lastSeed,now);if(effectName==='none'||reduced.matches)content.visible=phase==='enter';return;}
     if(effectName==='none'||reduced.matches||!committed){effect.cancel();content.visible=phase==='enter';return;}
@@ -175,15 +199,32 @@ export function attachTextSurface(element,THREE,options={}){
       view.uniforms.tint.value.setStyle(window.getComputedStyle(element).color);
       beginEffect(now);const active=rich?rich.step(now,reduced.matches):effect.step(now,reduced.matches);
       if(!active&&phase==='exit')content.visible=false;
-      if(!active&&phase!=='exit'&&resting==='native'){renderer.render(scene,camera);native('native resting presentation');resolveReady({mode,reason});return;}
+      let nativeAlpha=0,meshFade=0;
+      if(active&&phase!=='exit'&&resting==='native'&&effectStarted!==null)
+        nativeAlpha=Math.max(0,Math.min(1,(now-(effectStarted+settings.duration-175))/350));
+      if(!active&&phase!=='exit'&&resting==='native'){
+        // Use the effect clock, not the first idle frame. Slow frames must not
+        // restart the handoff or jump native alpha back to its halfway point.
+        // Cancellation/settings refresh have no entry clock. Keep their
+        // restored native paint instead of beginning a second handoff.
+        const instant=effectStarted===null||effectName==='none'||reduced.matches;
+        if(settleStarted===null)settleStarted=effectStarted===null?now:effectStarted+settings.duration;
+        meshFade=instant?1:Math.min(1,(now-settleStarted)/350);
+        nativeAlpha=instant?1:Math.min(1,(now-settleStarted+175)/350);
+        if(meshFade>=1){renderer.render(scene,camera);native('native resting presentation');resolveReady({mode,reason});return;}
+      }else settleStarted=null;
+      view.uniforms.presentationOpacity.value=1-meshFade;rich?.setPresentationOpacity(1-meshFade);
       const handingOffNative=mode==='native';
       renderer.render(scene,camera);draws++;
-      canvas.style.display='block';ownStyle('-webkit-text-fill-color','transparent');ownStyle('text-shadow','none');mode='mesh';reason=null;
-      rich?.hide();
+      // Transfer temporary offscreen ownership to the regular mesh paint mask
+      // in the same task, before the browser can paint native glyphs.
+      nativeMask?.release();
+      canvas.style.display='block';if(!rich)ownStyle('-webkit-text-fill-color',nativeAlpha>0?`color-mix(in srgb, ${window.getComputedStyle(element).color} ${nativeAlpha*100}%, transparent)`:'transparent');ownStyle('text-shadow','none');mode='mesh';reason=null;
+      rich?.hide(nativeAlpha);
       // Commit the shared canvas before the browser paints hidden native text.
       if(handingOffNative)renderer.flushPresentation?.();
       renderer.invalidate?.();
-      resolveReady({mode,reason});if(active)request();
+      resolveReady({mode,reason});if(active||meshFade<1&&settleStarted!==null)request();
     }catch(error){fail(error);}
   }
   life.own(()=>{if(frame!==null)window.cancelAnimationFrame(frame);frame=null;});
@@ -192,6 +233,7 @@ export function attachTextSurface(element,THREE,options={}){
     renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});life.own(()=>{renderer.dispose();renderer.forceContextLoss();});
     renderer.setSurface?.(element,{escapeHost:element.closest('button,a,[role="button"]')||element});
     canvas=renderer.domElement;canvas.setAttribute('aria-hidden','true');canvas.setAttribute('data-thd-text-surface','');
+    nativeMask=createTextPaintMask(element,canvas);life.own(()=>nativeMask.release());
     fingerprint=createDOMTextFingerprint(element,canvas);
     Object.assign(canvas.style,{position:'absolute',pointerEvents:'none',display:'none',margin:'0',padding:'0',border:'0',maxWidth:'none',maxHeight:'none'});
     element.append(canvas);life.own(()=>canvas.remove());
@@ -224,7 +266,7 @@ export function attachTextSurface(element,THREE,options={}){
     life.listen(window,'resize',refresh);
     for(const event of ['loadingdone','loadingerror'])life.listen(document.fonts,event,()=>{fontRevision++;refresh();});
     life.listen(forced,'change',()=>{native();refresh();});life.listen(reduced,'change',refresh);
-    request();
+    if(pendingPhase!==null)play(pendingPhase);else request();
   }catch(error){fail(error);}
   return {element,ready,
     refresh,
@@ -234,15 +276,17 @@ export function attachTextSurface(element,THREE,options={}){
       validResting(next.resting??resting);resting=next.resting??resting;
       const normalized=normalizeTextEffectOptions(next.inputEffectOptions?{formation:-1,...next.inputEffectOptions}:settings,candidate==='none'?'dust-wind':candidate);
       effectName=candidate;settings=normalized;if('enabled' in next)enabled=next.enabled!==false;
-      effect?.cancel();rich?.cancel();pendingPhase=null;pendingStarted=null;effectStarted=null;phase='enter';if(content)content.visible=true;refresh();
+      effect?.cancel();rich?.cancel();pendingPhase=null;pendingStarted=null;effectStarted=null;phase='enter';if(content)content.visible=true;native();refresh();
     },
-    cancel(){if(life.disposed)return;effect?.cancel();rich?.cancel();pendingPhase=null;pendingStarted=null;effectStarted=null;phase='enter';if(content)content.visible=true;refresh();},
-    play(next='enter'){
-      if(life.disposed)throw Error('Text surface disposed');if(!['enter','exit'].includes(next))throw TypeError('Expected enter or exit');
-      pendingPhase=next;pendingStarted=null;refresh();
-    },
-    stats:()=>({timeline:{phase,started:effectStarted,ends:effectStarted===null?null:effectStarted+settings.duration},disposed:life.disposed,mode,reason,committed,preparing,draws,builds,pending:frame!==null,suspended:document.hidden||!intersecting,triangles:rich?rich.stats().triangles:view?.triangleCount??0,
-      width:layout?.width??0,height:layout?.height??0,fontFamily:engine?.face?.family,displayFontSize:layout?.size,divisions:engine?.divisions,effect:effect?.stats(),rich:rich?.stats()??null}),
+    cancel(){if(life.disposed)return;effect?.cancel();rich?.cancel();pendingPhase=null;pendingStarted=null;effectStarted=null;phase='enter';if(content)content.visible=true;native();refresh();},
+    play,
+    stats:()=>{const started=pendingPhase!==null?pendingStarted:effectStarted,currentPhase=pendingPhase??phase;
+      const duration=reduced.matches||effectName==='none'?0:settings.duration;
+      const finishAt=started===null?null:started+(duration===0?0:duration+(currentPhase==='enter'&&resting==='native'?350:0));
+      const suspended=document.hidden||!intersecting;
+      const completed=started!==null&&(suspended?window.performance.now()>=finishAt:pendingPhase===null&&(currentPhase==='exit'?content?.visible===false:resting==='mesh'?mode==='mesh'&&!(rich?rich.stats().active:effect?.active):mode==='native'&&reason==='native resting presentation'));
+      return {completed,timeline:{phase:currentPhase,started,ends:started===null?null:started+duration,finishAt},disposed:life.disposed,mode,reason,committed,preparing,draws,builds,pending:frame!==null,suspended:document.hidden||!intersecting,triangles:rich?rich.stats().triangles:view?.triangleCount??0,
+      width:layout?.width??0,height:layout?.height??0,fontFamily:engine?.face?.family,displayFontSize:layout?.size,divisions:engine?.divisions,effect:effect?.stats(),rich:rich?.stats()??null};},
     destroy(){if(life.disposed)return;native('destroyed');resolveReady({mode,reason});life.destroy();}
   };
 }

@@ -139,8 +139,9 @@ export class TriangleEffect {
                 pace=clamp(mix(0.5,pace,dustChaos),0.0,1.0);
               }
               float remain=1.0-t;
-              dustOpacity=smoothstep(0.0,0.1,t);
+              dustOpacity=1.0;
               ${textEffectApplicationShader}
+              dustOpacity*=thdParticleAppearance(t,fract(seed*17.17+drift*3.13));
               p.z=thdFrontDepth(position.z,p.z);
               break;
             }

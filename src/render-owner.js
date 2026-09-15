@@ -29,11 +29,16 @@ export function createRenderOwner(THREE,document,{presentation='local',...option
     }
     render(scene,camera){
       ensure();if(this.dead)throw Error('Presentation disposed');
-      if(dpr!==this.ratio){renderer.setPixelRatio(this.ratio);dpr=this.ratio;}
-      if(w!==this.width||h!==this.height){renderer.setSize(this.width,this.height,false);w=this.width;h=this.height;}
+      // Keep a high-water scratch buffer: alternating differently sized leases
+      // must not reallocate the GPU drawing buffer on every text frame.
+      const pw=this.domElement.width,ph=this.domElement.height;
+      if(pw>w||ph>h){w=Math.max(w,pw);h=Math.max(h,ph);renderer.setSize(w,h,false);}
+      renderer.setScissorTest(false);renderer.clear(true,true,true);
+      renderer.setViewport(0,0,pw,ph);
+      renderer.setScissor(0,0,pw,ph);renderer.setScissorTest(true);
       const t=performance.now();renderer.render(scene,camera);renderMs+=performance.now()-t;
       const start=performance.now();this.context.clearRect(0,0,this.domElement.width,this.domElement.height);
-      this.context.drawImage(renderer.domElement,0,0);copyMs+=performance.now()-start;copies++;
+      this.context.drawImage(renderer.domElement,0,h-ph,pw,ph,0,0,pw,ph);copyMs+=performance.now()-start;copies++;
     }
     dispose(){if(this.dead)return;this.dead=true;leases.delete(this);this.domElement.width=this.domElement.height=0;}
     forceContextLoss(){} // A lease cannot destroy a peer's context.

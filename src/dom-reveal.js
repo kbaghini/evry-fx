@@ -14,7 +14,7 @@ export function withRevealOnView(factory,element,THREE,options){
   const style=document.createElement('style');style.textContent=`[${attribute}="${id}"]{opacity:0!important}`;
   const originalOpacity=window.getComputedStyle(element).opacity;revealOpacity.set(element,originalOpacity);
   element.setAttribute(attribute,id);document.head.append(style);
-  let held=true,disposed=false,ready=false,eligible=false,armed=true,count=0,fallback=false;let retry=null,attempts=0;
+  let held=true,disposed=false,ready=false,eligible=false,armed=true,count=0,fallback=false,manual=false;let basePlay;let retry=null,attempts=0;
   const empty=new THREE.Scene(),renderers=new Set();let revealPending=false;
   const namespace={...THREE,WebGLRenderer:class extends THREE.WebGLRenderer{
     constructor(...args){super(...args);renderers.add(this);}
@@ -45,7 +45,7 @@ export function withRevealOnView(factory,element,THREE,options){
     const state=surface.stats(),timeline=state.timeline;
     const running=timeline?timeline.phase==='enter'&&timeline.ends>window.performance.now():state.image?.state==='entering'&&state.image?.active;
     // Re-entering view resumes an unfinished entry; do not reset its clock.
-    if(running)surface.refresh();else surface.play('enter');
+    if(manual||running)surface.refresh();else basePlay('enter');
   }
   function trigger(){
     if(disposed||!ready||!eligible||!armed)return;
@@ -53,11 +53,11 @@ export function withRevealOnView(factory,element,THREE,options){
     armed=false;revealPending=true;requestEntry();attempts=0;clearTimeout(retry);retry=setTimeout(ensureFrame,100);
   }
   try{
-    surface=factory(element,namespace,settings);
+    surface=factory(element,namespace,settings);basePlay=surface.play.bind(surface);
     observer=new window.IntersectionObserver(entries=>{
       for(const entry of entries){
         const visible=entry.isIntersecting&&entry.intersectionRect.width>0&&entry.intersectionRect.height>0;
-        if(!visible){eligible=false;clearTimeout(retry);retry=null;if(!once||count===0){armed=true;mask();}continue;}
+        if(!visible){eligible=false;clearTimeout(retry);retry=null;if(!manual&&(!once||count===0)){armed=true;mask();}continue;}
         eligible=entry.intersectionRatio>=threshold;if(eligible&&armed){surface.refresh();attempts=0;clearTimeout(retry);retry=setTimeout(ensureFrame,100);}trigger();
       }
     },{root,threshold:[...new Set([0,threshold===0?0.000001:threshold])]});observer.observe(element);
@@ -67,7 +67,17 @@ export function withRevealOnView(factory,element,THREE,options){
     sizeObserver=new window.ResizeObserver(()=>{const box=element.getBoundingClientRect(),hasArea=box.width>0&&box.height>0;if(hasArea&&!hadArea&&(!once||count===0)){observer.unobserve(element);observer.observe(element);}hadArea=hasArea;});sizeObserver.observe(element);
   }catch(error){cleanup();surface?.destroy();throw error;}
   const destroy=surface.destroy,stats=surface.stats;
-  surface.stats=()=>({...stats(),reveal:{waiting:held,count,threshold,once}});
+  surface.stats=()=>({...stats(),reveal:{waiting:held,count,threshold,once,manual}});
+  // Explicit play owns its clock even before the first intersection. Retain the
+  // initial paint mask, but never let automatic entry restart that request.
+  surface.play=(phase='enter')=>{
+    if(disposed)throw Error('Surface disposed');
+    if(!['enter','exit'].includes(phase))throw TypeError('Expected enter or exit');
+    manual=true;armed=false;clearTimeout(retry);retry=null;
+    revealPending=held;basePlay(phase);
+  };
+  const cancel=surface.cancel?.bind(surface);
+  surface.cancel=()=>{if(disposed)return;manual=true;armed=false;revealPending=false;unmask();cancel?.();};
   surface.destroy=()=>{if(disposed)return;cleanup();destroy();};
   surface.ready.then(()=>{if(disposed)return;ready=true;const state=surface.stats();if(isFallback(state)){showFallback();return;}if(eligible)surface.refresh();trigger();},()=>{if(!disposed){unmask();observer.disconnect();}});
   return surface;

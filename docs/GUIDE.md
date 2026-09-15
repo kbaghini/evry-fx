@@ -41,7 +41,13 @@ The classic `<script src="…/src/dom-free-script.js">` URL remains unchanged. `
 
 Auto selects h1/h2/[data-thd-text] and img[data-thd-image]; data-thd-ignore and interactive/navigation/dialog regions are excluded. Options: auto, textSelector, imageSelector, presentation, threshold, once, intersectionRoot. Call refresh after route/DOM changes. Manual attachment accepts presentation and revealOnView. play/cancel/refresh/stats/destroy are exposed; arbitrary effects are not. Scroll exit hides repeated targets rather than running an exit animation.
 
+An explicit `surface.play()` takes ownership from automatic `revealOnView` for that attachment, retaining the initial mask until rendering starts. Offscreen text, images and SVG keep their start timestamp without particle updates or drawing, and resume at the elapsed position instead of restarting. Use `await surface.whenFinished()` for cleanup, including native handoff and offscreen completion; it returns `{status: 'completed' | 'cancelled' | 'unsupported'}`. See `examples/evry-website.md` for captions driven by a slider clock.
+
+Concurrent `whenFinished()` calls share one pending completion and polling loop. A new successful `play()` cancels the previous pending wait; an invalid phase does not interrupt it. Cancellation, destruction of the attachment or its installation, and detaching the target resolve outstanding waits as `cancelled`. An untouched automatic reveal can wait for its first intersection without a preparation timeout. The 30-second watchdog only bounds an actual play/preparation attempt. Suspended effects are checked infrequently; waiting does not require a per-frame render loop.
+
 Preparation is lazy for offscreen targets. Native content may paint before a late script initializes; use the optional early mask below for initial-page entry effects. Unsupported content falls back to native presentation. Cross-origin image canvas restrictions and unsupported rich CSS still apply. This does not claim general CSS reproduction or new physical-device validation.
+
+`surface.ready` describes the first preparation result, not installation readiness. A text/SVG target below the viewport can remain unprepared until it approaches view. Enable ordinary controls after attachment creation rather than waiting for every page target's `ready`. `play()` can queue a request before preparation; use `whenFinished()` for the end of that requested effect. Targets without an entry request keep their native presentation.
 
 For an offscreen or zero-area image, `ready` can resolve with temporary native reason `Image not visible`; it does not promise a prepared GPU mesh outside the viewport. Image preparation begins near the viewport (roughly half a viewport height ahead). The native image's network loading policy is unchanged. Resize work is coalesced: the current raster follows the new box briefly, then the final crop and rounded corners are rebuilt after about 50ms of quiet, with a roughly 150ms bound during continuous resizing. Existing motion keeps its timeline.
 
@@ -119,6 +125,10 @@ DOM images are rasterized from their displayed box before meshing, applying supp
 ### Default shared canvas (2026-09-14)
 
 createFree defaults to auto routing with documentCanvas:true. Ordinary page effects use the bounded document-connected shared canvas; nested scroll containers, fixed/sticky content and explicit positioned stacking contexts route conservatively to local presentation. Force local with presentation:'local'; select legacy fixed shared rendering with presentation:'global',documentCanvas:false. experimentalDocumentCanvas is retained as a compatibility alias. Dialog-root rendering is unchanged. This is not general CSS stacking equivalence.
+
+## Native text handoff
+
+Display text returns to native paint with a 350ms transition. Native text begins fading in 175ms before the entry timeline ends; mesh fade-out starts at the end. Allow preparation plus the 2000ms effect plus 350ms when observing completion; do not destroy a surface on a fixed 2000ms timer. Reduced-motion users bypass the handoff. Unsupported typography still falls back to native immediately.
 
 ## Package identity
 

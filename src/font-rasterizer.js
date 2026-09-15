@@ -15,8 +15,8 @@ export class FontRasterizer {
     this.context.font = this.font;
     // Build the cached source for legibility, independently of the GPU's cheaper
     // moving-particle sampler. Reapply after canvas resize resets drawing state.
-    if ('textRendering' in this.context) this.context.textRendering = 'optimizeLegibility';
-    if ('fontKerning' in this.context) this.context.fontKerning = 'normal';
+    if ('textRendering' in this.context) this.context.textRendering = this.textRendering ?? 'optimizeLegibility';
+    if ('fontKerning' in this.context) this.context.fontKerning = this.fontKerning ?? 'normal';
     if ('letterSpacing' in this.context) this.context.letterSpacing = `${this.letterSpacing || 0}px`;
     if ('wordSpacing' in this.context) this.context.wordSpacing = `${this.wordSpacing || 0}px`;
     this.context.textAlign = 'left'; this.context.textBaseline = 'alphabetic';
@@ -30,15 +30,26 @@ export class FontRasterizer {
     if (this.cache.has(key)) return this.cache.get(key);
     this.configure(direction);
     const metric = this.context.measureText(text);
+    let horizontalScale = 1;
+    if (this.displayFontSize > 0 && metric.width > 0) {
+      const factor = this.displayFontSize / 200;
+      this.context.font = this.font.replace('200px', `${this.displayFontSize}px`);
+      if ('letterSpacing' in this.context) this.context.letterSpacing = `${(this.letterSpacing || 0) * factor}px`;
+      if ('wordSpacing' in this.context) this.context.wordSpacing = `${(this.wordSpacing || 0) * factor}px`;
+      const advance = this.context.measureText(text).width / factor;
+      if (Number.isFinite(advance) && advance > 0) horizontalScale = advance / metric.width;
+      this.configure(direction);
+    }
     const padding = 2;
-    const drawOffsetX = Math.ceil(Math.max(0, metric.actualBoundingBoxLeft || 0)) + padding;
+    const drawOffsetX = Math.ceil(Math.max(0, (metric.actualBoundingBoxLeft || 0)*horizontalScale)) + padding;
     const baseline = Math.ceil(Math.max(this.ascent, metric.actualBoundingBoxAscent || 0)) + padding;
-    const width = Math.max(2, Math.ceil(Math.max(metric.width, metric.actualBoundingBoxRight || 0) + drawOffsetX + padding));
+    const width = Math.max(2, Math.ceil(Math.max(metric.width, metric.actualBoundingBoxRight || 0)*horizontalScale + drawOffsetX + padding));
     const height = Math.max(2, Math.ceil(baseline + Math.max(this.descent, metric.actualBoundingBoxDescent || 0) + padding));
     this.canvas.width = width; this.canvas.height = height; this.configure(direction);
-    this.context.fillText(text, drawOffsetX, baseline);
+    this.context.save();this.context.translate(drawOffsetX,baseline);this.context.scale(horizontalScale,1);
+    this.context.fillText(text,0,0);this.context.restore();
     const rgba = this.context.getImageData(0, 0, width, height).data;
-    const result = { width, height, baseline, drawOffsetX, advance: metric.width, rgba };
+    const result = { width, height, baseline, drawOffsetX, advance: metric.width*horizontalScale, rgba };
     this.cache.set(key, result);
     return result;
   }

@@ -8,7 +8,10 @@ export function swapDOMImage(animate,previous,next,{exitEffect=null,waitForExit=
     parent.append(next);Object.assign(next.style,{position:'absolute',left:(box.left-bounds.left-parent.clientLeft+parent.scrollLeft)+'px',top:(box.top-bounds.top-parent.clientTop+parent.scrollTop)+'px',width:box.width+'px',height:box.height+'px',margin:'0',visibility:'hidden'});
     if(view.getComputedStyle(previous).position==='static')previous.style.position='relative';previous.style.zIndex=topImage==='previous'?'1':'0';next.style.zIndex=topImage==='next'?'1':'0';
     // Local layers preserve the native next image above a departing canvas too.
-    const layerOptions=(!enterEffect||topImage==='previous')?{...options,presentation:'local'}:options;
+    // A departing previous image can use the shared canvas above the native
+    // next image. Forcing local here clips particles to the rounded host.
+    const departingOverNative=!enterEffect&&topImage==='previous';
+    const layerOptions=!departingOverNative&&(!enterEffect||topImage==='previous')?{...options,presentation:'local'}:options;
     const beginEntry=()=>{next.style.visibility='visible';if(enterEffect)jobs.push(animate(next,{...layerOptions,phase:'enter'}));};
     const earlyEntry=!enterEffect||(!waitForExit&&topImage==='previous');if(earlyEntry)beginEntry();
     if(exitEffect){
@@ -20,7 +23,7 @@ export function swapDOMImage(animate,previous,next,{exitEffect=null,waitForExit=
     if(success){previous.style.visibility='hidden';return {status:'completed'};}
     rollback();return {status:cancelled?'cancelled':'unsupported'};
   }catch(error){jobs.forEach(j=>j.cancel());rollback();throw error;}})();
-  function rollback(){previous.style.position=previousPosition;previous.style.zIndex=previousZ;previous.style.visibility=previousVisibility;next.style.cssText=css;if(origin)origin.insertBefore(next,sibling?.parentNode===origin?sibling:null);parent.style.position=parentPosition;}
+  function rollback(){previous.style.position=previousPosition;previous.style.zIndex=previousZ;previous.style.visibility=previousVisibility;next.style.cssText=css;if(origin)origin.insertBefore(next,sibling?.parentNode===origin?sibling:null);else next.remove();parent.style.position=parentPosition;}
   return {finished,cancel(){cancelled=true;jobs.forEach(j=>j.cancel());}};
 }
 

@@ -19,18 +19,20 @@ export function attachSVGSurface(element,THREE,options={}){
   function restore(){if(element.style.visibility==='hidden')element.style.visibility=oldVisibility;}
   function present(state){
     if(disposed)return;
-    if(state.mode==='mesh'||state.reason==='hidden after exit'){if(element.style.visibility!=='hidden')element.style.visibility='hidden';}else restore();
+    // The image adapter exposes native pixels before its settled mesh finishes
+    // fading. An explicit hidden:false must win over the remaining mesh mode.
+    if(state.hidden??(state.mode==='mesh'||state.reason==='hidden after exit')){if(element.style.visibility!=='hidden')element.style.visibility='hidden';}else restore();
     reason=state.reason;
     if(state.mode==='mesh'||state.reason)resolve(state);
   }
   async function refresh(){if(disposed)return;const token=++revision;clearTimeout(timer);
     try{const next=snapshot(element),r=element.getBoundingClientRect(),p=parent.getBoundingClientRect();if(!(r.width>0&&r.height>0))throw Error('SVG not visible');
       Object.assign(image.style,{left:(r.left-p.left-parent.clientLeft+parent.scrollLeft)+'px',top:(r.top-p.top-parent.clientTop+parent.scrollTop)+'px',width:r.width+'px',height:r.height+'px'});
-      if(next!==xml){xml=next;restore();image.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml);}
+      if(next!==xml){xml=next;if(!surface)restore();image.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml);}
       if(!surface)surface=attachImageSurface(image,THREE,{...options,onPresentation:present});
       await surface.refresh();if(disposed||token!==revision)return;
       const settle=()=>{if(disposed||token!==revision)return;const s=surface.stats();if(s.mode==='mesh'||s.reason)present(s);else timer=setTimeout(settle,16);};settle();
-    }catch(error){reason=error.message;xml='';surface?.destroy();surface=null;restore();resolve({mode:'native',reason});}
+    }catch(error){xml='';surface?.destroy();surface=null;restore();reason=error.message;resolve({mode:'native',reason});}
   }
   const styleKey=()=>element.style.cssText.replace(/(?:^|;)\s*visibility\s*:[^;]*/g,'');let lastStyle=styleKey();
   const observer=new view.MutationObserver(records=>{const next=styleKey();if(records.some(r=>r.target!==element||r.attributeName!=='style')||next!==lastStyle){lastStyle=next;refresh();}});

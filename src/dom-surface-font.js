@@ -4,8 +4,8 @@ import {domRasterCache} from './dom-raster-cache.js';
 const owners=new WeakMap();
 export function readDOMFont(element){
   const style=element.ownerDocument.defaultView.getComputedStyle(element);
-  const font={family:style.fontFamily,weight:Number(style.fontWeight)||400,style:style.fontStyle};
-  font.key=JSON.stringify([font.family,font.weight,font.style]);return font;
+  const font={family:style.fontFamily,weight:Number(style.fontWeight)||400,style:style.fontStyle,kerning:style.fontKerning,textRendering:style.textRendering};
+  font.key=JSON.stringify([font.family,font.weight,font.style,font.kerning,font.textRendering]);return font;
 }
 export function domFontAtSize(engine,size){
   const font=engine.domFont;
@@ -34,12 +34,12 @@ export async function adoptDOMFont(engine,element){
   rasterizer.canvas=document.createElement('canvas');
   rasterizer.context=rasterizer.canvas.getContext('2d',{willReadFrequently:true});
   if(!rasterizer.context)throw Error('Canvas font rasterization unavailable');
-  rasterizer.font=`${next.style} ${next.weight} 200px ${next.family}`;rasterizer.cache=new Map();rasterizer.configure();
+  rasterizer.font=`${next.style} ${next.weight} 200px ${next.family}`;rasterizer.cache=new Map();rasterizer.fontKerning=next.kerning;rasterizer.textRendering=next.textRendering;rasterizer.configure();
   const metric=rasterizer.context.measureText('آبپچگژهمیABCgj');
   rasterizer.ascent=Math.ceil(Math.max(metric.fontBoundingBoxAscent||0,metric.actualBoundingBoxAscent||0));
   rasterizer.descent=Math.ceil(Math.max(metric.fontBoundingBoxDescent||0,metric.actualBoundingBoxDescent||0));
   rasterizer.raster=function(text,direction='ltr'){
-    const key=JSON.stringify([this.font,this.ascent,this.descent,this.letterSpacing||0,this.wordSpacing||0,direction,text]);
+    const key=JSON.stringify([this.font,this.displayFontSize,this.fontKerning,this.textRendering,this.ascent,this.descent,this.letterSpacing||0,this.wordSpacing||0,direction,text]);
     return shared.raster(key,()=>{this.cache.clear();return FontRasterizer.prototype.raster.call(this,text,direction);});
   };
   owner.epoch=shared.epoch;

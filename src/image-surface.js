@@ -8,9 +8,10 @@ import {normalizeTextEffectOptions} from './text-effect-options.js';
 import {textEditMotions} from './text-edit-motions.js';
 
 export const IMAGE_EFFECT_MODES=Object.freeze(Object.keys(textEditMotions));
-// Images and text use the same effect recipe defaults.
+// Images share motion recipes with text, but preserve source color by default.
 export function normalizeImageEffectOptions(settings={},mode='dust-wind'){
-  return normalizeTextEffectOptions({formation:-1,...settings},mode);
+  const normalized=normalizeTextEffectOptions({formation:-1,...settings},mode);
+  return Object.freeze({...normalized,recipe:Object.freeze({...normalized.recipe,glow:settings.recipe?.glow??0})});
 }
 
 // Images use twice the text-derived rows: half-size cells, with a bounded grid.
@@ -32,6 +33,7 @@ void main(){
   gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);
 }`;
 const fragmentShader=`
+uniform float presentationOpacity;
 uniform sampler2D rasterMap;
 varying vec2 vRasterUV;
 void main(){
@@ -39,6 +41,7 @@ void main(){
   float coverage=rasterSample.a;
   gl_FragColor=vec4(rasterSample.rgb, coverage);
   #include <colorspace_fragment>
+  gl_FragColor.a *= presentationOpacity;
 }`;
 
 // One image object in an existing runtime. No renderer, input or font ownership.
@@ -92,6 +95,7 @@ export function createImageSurface(runtime,{source,width=6,height=3.8,effect='du
       const start=performance.now(),factor=Math.min(width/raster.width,height/raster.height),w=raster.width*factor,h=raster.height*factor;
       const {rows,filterRadius,aspect}=meshSettings(raster,h),g=geometry(raster,rows,w,h,filterRadius,aspect);
       const material=new THREE.ShaderMaterial({vertexShader,fragmentShader,side:THREE.DoubleSide,transparent:true,depthWrite:false,toneMapped:false,extensions:{derivatives:true}});
+      material.uniforms.presentationOpacity={value:1};
       applyRasterSamplingShader(material);
       material.defaultAttributeValues.glyphOffset=[0,0];
       const releaseTexture=attachRasterTexture(THREE,material,raster),mesh=new THREE.Mesh(g,material);mesh.frustumCulled=false;
@@ -105,11 +109,11 @@ export function createImageSurface(runtime,{source,width=6,height=3.8,effect='du
     }catch(e){if(disposed||token!==revision||e.name==='AbortError')return false;error=e.message;throw e;}
     finally{if(token===revision){loading=false;runtime.requestRender();}}
   }
-  function play(departing){
+  function play(departing,started){
     if(disposed||!asset)return false;
     if(departing&&(state==='hidden'||state==='leaving'||intent?.departing))return false;
     const fromAge=state==='entering'&&motion.jobs[0]?Math.max(0,Math.min(1,((motion.lastTime??motion.jobs[0].started)-motion.jobs[0].started)/motion.duration)):1;
-    intent={departing,fromAge};runtime.requestRender();return true;
+    intent={departing,fromAge,started};runtime.requestRender();return true;
   }
   const control={object,
     frame(now,reducedMotion){
@@ -145,10 +149,11 @@ export function createImageSurface(runtime,{source,width=6,height=3.8,effect='du
   };
   const unregister=runtime.register(control);
   return {object,ready:source===undefined?Promise.resolve(false):setSource(source),setSource,
-    enter:()=>play(false),exit:()=>play(true),
+    enter:started=>play(false,started),exit:started=>play(true,started),
     setEffect(mode,options={}){validMode(mode);const next=normalizeImageEffectOptions(options,mode);if(disposed)return;requestedSettings=options;entryMode=mode;entrySettings=next;motion.setMode(mode);motion.configure(next);motion.cancel();motion.uniforms.dustMaskOnly.value=0;intent=null;if(asset){asset.mesh.visible=true;state='visible';}runtime.requestRender();},
     setDisplaySize(width,height){if(!(Number.isFinite(width)&&Number.isFinite(height)&&width>0&&height>0))throw RangeError('Positive display dimensions required');displaySize={width,height};},
     setDirection(value){validDirection(value);direction=value;},
+    setPresentationOpacity(value){if(asset)asset.mesh.material.uniforms.presentationOpacity.value=value;},
     show(){if(disposed||!asset)return;intent=null;motion.cancel();motion.uniforms.dustMaskOnly.value=0;asset.mesh.visible=true;state='visible';runtime.requestRender();},
     frame:control.frame,destroy:control.destroy,
     stats(){const raster=asset?.raster,g=asset?.mesh.geometry;return {disposed,loading,error,state,active:motion.active,mode:entryMode,activeMode:motion.mode,exitMode:entrySettings.exitEffect==='same'?entryMode:entrySettings.exitEffect,duration:motion.duration,settings:{...motion.settings,recipe:{...motion.settings.recipe}},direction,motionFrame:asset?{...view.motionFrame}:null,divisions:asset?.rows,gridAspect:asset?.aspect,gridColumns:asset?Math.max(1,Math.round(asset.rows*asset.aspect)):0,triangles:g?g.getAttribute('position').count/3:0,builds,loadMs,buildMs,rasterBytes:raster?.rgba.byteLength||0,estimatedTextureBytes:raster?Math.ceil(raster.rgba.byteLength*4/3):0,geometryBytes:g?Object.values(g.attributes).reduce((n,a)=>n+a.array.byteLength,0):0,source:raster?{type:raster.type,width:raster.width,height:raster.height,originalWidth:raster.originalWidth,originalHeight:raster.originalHeight}:null};},

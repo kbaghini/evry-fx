@@ -4,7 +4,7 @@
 
 <p align="center"><strong>Your HTML. Four particle effects. Native when still.</strong></p>
 
-<p align="center">Free edition · 0.1.0-rc.1 preview · <a href="https://github.com/kbaghini/evry-fx/blob/main/LICENSE">MIT licensed</a> · JavaScript + TypeScript declarations</p>
+<p align="center">Free edition · 0.1.0-rc.3 preview · <a href="https://github.com/kbaghini/evry-fx/blob/main/LICENSE">MIT licensed</a> · JavaScript + TypeScript declarations</p>
 
 <p align="center">
   <a href="#quick-start">Quick start</a> ·
@@ -38,7 +38,7 @@ The README shows an animated preview. Open the [live interactive demo](https://k
 
 ## Quick start
 
-**Public preview: 0.1.0-rc.1.** Validate the supported content and layouts in your project before production use.
+**Public preview: 0.1.0-rc.3.** Validate the supported content and layouts in your project before production use.
 
 Install from your project folder:
 
@@ -114,3 +114,7 @@ For direct ownership with injected Three.js, `createFree` is also exported from 
 - This Free build does not include editable inputs, arbitrary effect customization or a dedicated React/Vue component pack.
 
 EV-RY FX Free is [MIT licensed](https://github.com/kbaghini/evry-fx/blob/main/LICENSE). Bundled dependencies retain their own licenses and [notices](https://github.com/kbaghini/evry-fx/blob/main/NOTICE.md). This license covers the Free distribution; other editions are separate.
+
+## Real integration: EV-RY website
+
+[See the EV-RY product-showcase integration](examples/evry-website.md): alternating snow/melt image transitions, animated captions and persistent-engine navigation. Includes initial-reveal and lifecycle guidance; the full website is currently a local integration.

@@ -27,6 +27,7 @@ const vertexShader = `
 `;
 const fragmentShader = `
   uniform float brightness;
+  uniform float presentationOpacity;
   uniform vec3 tint;
   varying vec3 vColor;
   varying vec3 vViewPosition;
@@ -41,6 +42,7 @@ const fragmentShader = `
     // CSS tint and sampled image RGB are linear in Three's working space.
     // Encode RGB once for the render target; coverage alpha stays unchanged.
     #include <colorspace_fragment>
+    gl_FragColor.a *= presentationOpacity;
   }
 `;
 
@@ -55,7 +57,7 @@ export class TextScene {
     this.glyphs = [];
     this.version = 0;
     this.effectStarted = null;
-    this.uniforms = { angles: { value: this.motion.angles }, radius: { value: 1 }, effectTime: { value: 2 }, brightness: { value: 1.25 }, tint: { value: new THREE.Color(1,1,1) } };
+    this.uniforms = { presentationOpacity:{value:1}, angles: { value: this.motion.angles }, radius: { value: 1 }, effectTime: { value: 2 }, brightness: { value: 1.25 }, tint: { value: new THREE.Color(1,1,1) } };
   }
 
   setText(text) {

@@ -9,11 +9,13 @@ import {groupDOMTextNodes,setRunRange,prepareFontBoundaries} from './dom-text-ru
 export class DOMRichText {
   constructor(element,THREE,content,canvas,options){Object.assign(this,{element,THREE,content,canvas,options});this.runs=new Map();this.styles=new Map();this.disposed=false;}
   restore(){for(const [node,values] of this.styles)for(const [name,[original,priority,owned]] of values)if(node.style.getPropertyValue(name)===owned){if(original)node.style.setProperty(name,original,priority);else node.style.removeProperty(name);}this.styles.clear();}
-  hide(){for(const run of this.runs.values())for(const text of run.nodes)for(const [name,value] of [['-webkit-text-fill-color','transparent'],['text-shadow','none']]){
+  hide(alpha=0){for(const run of this.runs.values())for(const text of run.nodes)for(const [name,value] of [['-webkit-text-fill-color',alpha>0?`color-mix(in srgb, ${text.parentElement.ownerDocument.defaultView.getComputedStyle(text.parentElement).color} ${alpha*100}%, transparent)`:'transparent'],['text-shadow','none']]){
     const node=text.parentElement;let values=this.styles.get(node);if(!values){values=new Map();this.styles.set(node,values);}
     if(!values.has(name))values.set(name,[node.style.getPropertyValue(name),node.style.getPropertyPriority(name),value]);
+    values.get(name)[2]=value;
     if(node.style.getPropertyValue(name)!==value)node.style.setProperty(name,value);
   }}
+  setPresentationOpacity(value){for(const run of this.runs.values())run.view.uniforms.presentationOpacity.value=value;}
   cancel(){for(const r of this.runs.values())r.effect.cancel();}
   drop(run){run.effect.dispose();run.view.dispose();run.engine.dispose();run.group.removeFromParent();}
   dispose(){this.disposed=true;this.restore();for(const r of this.runs.values())this.drop(r);this.runs.clear();}
@@ -26,6 +28,7 @@ export class DOMRichText {
     if([...element.querySelectorAll('input,textarea,select,img,svg,canvas,[contenteditable="true"]')].some(node=>node!==canvas&&!canvas.contains(node)))return {reason:'Rich text currently accepts text elements only'};
     // Shaping across styled-node boundaries needs a shared shaping context.
     if(!prepareFontBoundaries(nodes,document))return {reason:'Unsupported joining boundary uses native shaping'};
+    this.shapingMismatch=null;
     const box=element.getBoundingClientRect(),width=element.clientWidth||box.width,height=element.clientHeight||box.height;
     if(!(width>0&&height>0))return {reason:'Text is not visible'};
     const wanted=new Set(nodes.map(n=>n.first));for(const [node,run] of this.runs)if(!wanted.has(node)){this.restore();this.drop(run);this.runs.delete(node);}
@@ -73,12 +76,26 @@ export class DOMRichText {
         // Preserve original offsets for DOM Range/color mapping; normalize only
         // the raster string when CSS collapses ASCII whitespace. NBSP and
         // preformatted spacing are deliberately untouched.
+        // Collapsible whitespace at a visual line end has no native advance.
+        // Range may still report a rectangle for it (notably with negative
+        // letter-spacing on Android), so exclude it before canvas measurement.
+        if(collapseWhitespace&&(r.end<node.data.length||node===nodes.at(-1))){
+          while(r.end>r.start&&/[ \t\r\n\f]/.test(node.data[r.end-1]))r.end--;
+          if(r.end>r.start){
+            const range=document.createRange();setRunRange(range,node,r.start,r.end);
+            const rects=[...range.getClientRects()].filter(rect=>rect.height>0);
+            if(rects.length){r.left=Math.min(...rects.map(rect=>rect.left))-box.left-element.clientLeft;r.right=Math.max(...rects.map(rect=>rect.right))-box.left-element.clientLeft;}
+          }
+        }
         let text=node.data.slice(r.start,r.end);
         if(collapseWhitespace)text=text.replace(/[ \t\r\n\f]+/g,' ');
         r.text=(r.start===0&&node.joinStart?'\u200d':'')+text+(r.end===node.data.length&&node.joinEnd?'\u200d':'');
-        const expected=context.measureText(r.text).width;if(Math.abs(expected-(r.right-r.left))>Math.max(1,expected*.015))return {reason:'Rich run shaping differs from DOM; native text retained'};
+        const expected=context.measureText(r.text).width;if(Math.abs(expected-(r.right-r.left))>Math.max(1,expected*.015)){
+          this.shapingMismatch={text:r.text,canvasWidth:expected,domWidth:r.right-r.left,font:context.font,letterSpacing:context.letterSpacing,wordSpacing:context.wordSpacing,kerning:context.fontKerning,textRendering:context.textRendering};
+          return {reason:'Rich run shaping differs from DOM; native text retained'};
+        }
       }
-      run.engine.rasterizer.configure();const layout={rows,factor};
+      run.engine.rasterizer.displayFontSize=size;run.engine.rasterizer.configure();const layout={rows,factor};
       const paints=node.nodes.map(text=>({text,color:window.getComputedStyle(text.parentElement).color}));
       const multicolor=new Set(paints.map(p=>p.color)).size>1;
       const key=JSON.stringify([node.data,size,run.engine.domFont.key,rows,paints.map(p=>p.color)]);
@@ -112,7 +129,7 @@ export class DOMRichText {
     run.effect.prepareCharacterCenters(run.view,()=>run.characters);
   }}
   step(now,reduced){let active=false;for(const run of this.runs.values())active=run.effect.step(now,reduced)||active;return active;}
-  stats(){return {runs:this.runs.size,triangles:[...this.runs.values()].reduce((n,r)=>n+(r.view.triangleCount??0),0),active:[...this.runs.values()].some(r=>r.effect.active)};}
+  stats(){return {shapingMismatch:this.shapingMismatch??null,runs:this.runs.size,triangles:[...this.runs.values()].reduce((n,r)=>n+(r.view.triangleCount??0),0),active:[...this.runs.values()].some(r=>r.effect.active)};}
 }
 
 

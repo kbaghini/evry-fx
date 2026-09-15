@@ -67,42 +67,42 @@
       <div><h2>Make it your own page.</h2><p>Use the script loader or the module API. Explore attachment, viewport entry and cleanup in the <a href="https://github.com/kbaghini/evry-fx/blob/main/docs/GUIDE.md">usage guide</a>.</p></div>
     </section>
   </main>
-  <footer class="footer shell"><p>EV-RY FX Free · Package: <span class="code">@ev-ry/fx</span></p><p>Public preview · 0.1.0-rc.1 · MIT</p></footer>
+  <footer class="footer shell"><p>EV-RY FX Free · Package: <span class="code">@ev-ry/fx</span></p><p>Public preview · 0.1.0-rc.3 · MIT</p></footer>
   <script type="module">
     const status=document.querySelector('#demo-status'),buttons=[...document.querySelectorAll('button')];
     const reduced=matchMedia('(prefers-reduced-motion: reduce)');
-    let owner,surfaces=[],timer=null,disposed=false;
+    let owner,surfaces=[],action=0,disposed=false;
     function message(text){status.textContent=text;}
     function restMessage(){message(reduced.matches?'Reduced motion is enabled. Transitions settle immediately.':'Ready. Choose an effect above.');}
-    function finishWhenSettled(label,selected){
-      clearTimeout(timer);const start=performance.now();let seenMotion=false;
-      function inspect(){
-        if(disposed)return;
-        const states=selected.map(surface=>surface.stats()),active=states.some(s=>s.image?.active||s.effect?.active||s.rich?.active||s.pending||s.preparing);
-        seenMotion ||= active;
-        if(active||!seenMotion&&!reduced.matches&&performance.now()-start<200){timer=setTimeout(inspect,80);return;}
+    async function finishWhenSettled(label,selected,current){
+      try{
+        const results=await Promise.all(selected.map(surface=>surface.whenFinished()));
+        if(disposed||current!==action)return;
+        if(results.some(result=>result.status==='unsupported')){
+          message('An example cannot animate in this browser or layout. Its original content remains available.');return;
+        }
+        if(results.some(result=>result.status==='cancelled')){restMessage();return;}
         message(reduced.matches?'Reduced motion is enabled. Transition complete.':label==='enter'?'Assembled. The browser is displaying the content again.':'Dispersed. Select Assemble or Reset to bring the content back.');
-      }
-      timer=setTimeout(inspect,80);
+      }catch(error){if(!disposed&&current===action){message('The transition could not complete. Select Reset to restore the original content.');console.error('EV-RY FX demo:',error);}}
     }
     function play(phase,indices=[0,1]){
       if(disposed||!surfaces.length)return;
       const selected=indices.map(index=>surfaces[index]);
-      message(phase==='enter'?'Assembling…':'Dispersing…');
-      for(const surface of selected)surface.play(phase);
-      finishWhenSettled(phase,selected);
+      const current=++action;message(phase==='enter'?'Assembling…':'Dispersing…');
+      try{for(const surface of selected)surface.play(phase);finishWhenSettled(phase,selected,current);}
+      catch(error){for(const surface of selected)surface.cancel();message('The effects could not start here. The original content is still available.');console.error('EV-RY FX demo:',error);}
     }
-    function reset(){clearTimeout(timer);for(const surface of surfaces)surface.cancel();restMessage();}
-    function destroy(){if(disposed)return;disposed=true;clearTimeout(timer);owner?.destroy();}
+    function reset(){if(disposed)return;action++;for(const surface of surfaces)surface.cancel();restMessage();}
+    function destroy(){if(disposed)return;disposed=true;action++;owner?.destroy();}
     async function start(){
       try{
         const {loadFree}=await import('../src/dom-free-loader.js');
         const api=await loadFree({auto:false});if(disposed)return;
         owner=api.create(document,{auto:false});
         surfaces=[owner.attachText(document.querySelector('#text-target')),owner.attachImage(document.querySelector('#image-target'))];
-        await Promise.all(surfaces.map(surface=>surface.ready));if(disposed)return;
-        const unsupported=surfaces.map(surface=>surface.stats()).filter(state=>state.mode!=='mesh'&&state.reason&&!/native resting presentation|not visible|not connected/i.test(state.reason));
-        if(unsupported.length)throw Error('The current browser or layout cannot render this example.');
+        // Attachment readiness is local to each target's viewport preparation.
+        // Controls can queue play immediately; a below-fold image must not
+        // disable the entire demo or force unnecessary mesh work at startup.
         buttons.forEach(button=>button.disabled=false);restMessage();
         // An inspectable handle for documentation captures and smoke checks.
         window.evryFxDemo={owner,surfaces,play,reset,ready:true};

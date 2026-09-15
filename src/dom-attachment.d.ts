@@ -1,5 +1,5 @@
 export interface SurfaceOptions {
-  /** Text/image/SVG only. Re-arm after complete exit. */
+  /** Text/image/SVG only. Re-arm after complete exit when once is false. Explicit play takes over automatic triggering. */
   revealOnView?: false | {threshold?: number; once?: boolean; root?: Element | null};
   resting?: 'mesh' | 'native';
   inputEffect?: string;

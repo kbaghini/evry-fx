@@ -33,6 +33,13 @@ export const textMotionPrimitives=`
     float delay=clamp(order,0.0,1.0)*spread;
     return clamp((t-delay)/max(1.0-delay,0.001),0.0,1.0);
   }
+  // Continuous per-particle appearance: sparse at first, progressively denser.
+  // Use the existing reversible motion phase so exit follows the same envelope.
+  float thdParticleAppearance(float t,float order){
+    float start=0.55*sqrt(clamp(order,0.0,1.0));
+    float fade=clamp((t-start)/0.25,0.0,1.0);
+    return fade*fade;
+  }
   vec2 thdTurn(vec2 v,float angle){
     return vec2(v.x*cos(angle)-v.y*sin(angle),v.x*sin(angle)+v.y*cos(angle));
   }

@@ -1,3 +1,13 @@
+# EV-RY FX Free 0.1.0-rc.4
+
+- Failed classic/module initialization can be retried after a dependency-loading error; successful first initialization remains shared.
+- Cancelling an image swap settles promptly even if image decoding stalls. A late job cannot roll back host changes twice.
+- Image cleanup preserves an inline opacity change made by the host while attached.
+- The Free package retains the verified four-preset runtime from rc.3; no private Studio/Pro features were imported from the shared development tree.
+- Documentation links the official [FX page](https://ev-ry.com/fx/) and keeps the [four-effect Free demo](https://kbaghini.github.io/evry-fx/docs/) distinct.
+
+Validation covers a clean tarball install, Chrome desktop/mobile-layout/reduced-motion scenarios, loader retry and lifecycle checks. It does not certify physical devices, all SVG/CORS cases or production-site performance.
+
 # EV-RY FX Free 0.1.0-rc.3
 
 - Cancel/update no longer starts a fresh text handoff; invalid play phases leave automatic reveal intact, and offscreen no-effect calls complete immediately.

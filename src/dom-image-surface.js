@@ -11,7 +11,17 @@ export function attachImageSurface(element,THREE,options={}){
   const document=element.ownerDocument,window=document.defaultView,parent=element.parentElement;
   const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true}),canvas=renderer.domElement;
   const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(-1,1,1,-1,.1,100);camera.position.z=10;
-  const originalOpacity=element.style.opacity,nativeRestOpacity=options.nativeRestOpacity??(originalOpacity===''?1:Number(originalOpacity)),originalPosition=parent.style.position;
+  let originalOpacity=element.style.opacity,ownedOpacity=null;
+  const nativeRestOpacity=options.nativeRestOpacity??(originalOpacity===''?1:Number(originalOpacity)),originalPosition=parent.style.position;
+  function captureHostOpacity(){
+    if(ownedOpacity===null||element.style.opacity!==ownedOpacity)originalOpacity=element.style.opacity;
+  }
+  function writeOpacity(value){captureHostOpacity();element.style.opacity=value;ownedOpacity=element.style.opacity;}
+  function restoreOpacity(){
+    captureHostOpacity();
+    if(ownedOpacity!==null&&element.style.opacity===ownedOpacity)element.style.opacity=originalOpacity;
+    ownedOpacity=null;
+  }
   const ownsPosition=window.getComputedStyle(parent).position==='static';if(ownsPosition)parent.style.position='relative';
   Object.assign(canvas.style,{position:'absolute',pointerEvents:'none',display:'none'});canvas.setAttribute('aria-hidden','true');parent.append(canvas);
   renderer.setSurface?.(parent);
@@ -24,9 +34,12 @@ export function attachImageSurface(element,THREE,options={}){
   function native(error,restore=false){
     if(restore)exitHeld=false;
     const hidden=!disposed&&!restore&&(exitHeld||surface?.stats().state==='hidden');
-    nativeHidden=hidden;mode='native';reason=error||null;element.style.opacity=hidden?'0':(options.nativeRestOpacity!==undefined?String(nativeRestOpacity):originalOpacity);canvas.style.display='none';options.onPresentation?.({mode,reason,hidden});renderer.invalidate?.();
+    nativeHidden=hidden;mode='native';reason=error||null;
+    if(disposed)restoreOpacity();
+    else{captureHostOpacity();writeOpacity(hidden?'0':(options.nativeRestOpacity!==undefined?String(nativeRestOpacity):originalOpacity));}
+    canvas.style.display='none';options.onPresentation?.({mode,reason,hidden});renderer.invalidate?.();
   }
-  function holdExit(){exitHeld=true;nativeHidden=true;element.style.opacity='0';options.onPresentation?.({mode,reason,hidden:true});}
+  function holdExit(){exitHeld=true;nativeHidden=true;writeOpacity('0');options.onPresentation?.({mode,reason,hidden:true});}
   function suspend(){
     if(queuedPhase!==null&&queuedStarted===null)queuedStarted=window.performance.now();
     if(queuedPhase==='exit'||queuedPhase===null&&phase==='exit'&&effectStarted!==null)holdExit();
@@ -55,11 +68,11 @@ export function attachImageSurface(element,THREE,options={}){
       // Submit before handing off: reveal gates acknowledge even reduced motion.
       renderer.render(scene,camera);
       native(state.state==='hidden'?'hidden after exit':'native resting presentation');
-      if(state.state==='hidden')element.style.opacity='0';
+      if(state.state==='hidden')writeOpacity('0');
       resolve({mode,reason});return;
     }
     const handingOffNative=mode==='native';
-    element.style.opacity=String(nativeAlpha*nativeRestOpacity);nativeHidden=nativeAlpha===0;mode='mesh';reason=null;renderer.render(scene,camera);
+    writeOpacity(String(nativeAlpha*nativeRestOpacity));nativeHidden=nativeAlpha===0;mode='mesh';reason=null;renderer.render(scene,camera);
     options.onPresentation?.({mode,reason,hidden:nativeHidden});
     if(handingOffNative)renderer.flushPresentation?.();
     resolve({mode,reason});if(handoff&&meshFade<1)request();

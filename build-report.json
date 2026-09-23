@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0-rc.3",
+  "version": "0.1.0-rc.4",
   "effects": [
     "dust-wind",
     "smoke",
@@ -14,8 +14,8 @@
     },
     {
       "file": "src/dom-free.js",
-      "bytes": 5191,
-      "gzip": 1910
+      "bytes": 5268,
+      "gzip": 1952
     },
     {
       "file": "src/dom-attachment.js",
@@ -34,8 +34,8 @@
     },
     {
       "file": "src/dom-image-surface.js",
-      "bytes": 14775,
-      "gzip": 4711
+      "bytes": 15284,
+      "gzip": 4834
     },
     {
       "file": "src/image-surface.js",
@@ -54,13 +54,13 @@
     },
     {
       "file": "src/raster-texture-mesh.js",
-      "bytes": 2592,
-      "gzip": 1150
+      "bytes": 2627,
+      "gzip": 1159
     },
     {
       "file": "src/raster-texture-material.js",
-      "bytes": 4981,
-      "gzip": 1903
+      "bytes": 5060,
+      "gzip": 1914
     },
     {
       "file": "src/text-mesh-density.js",
@@ -94,8 +94,8 @@
     },
     {
       "file": "src/triangle-effect.js",
-      "bytes": 13758,
-      "gzip": 4313
+      "bytes": 13953,
+      "gzip": 4324
     },
     {
       "file": "src/particle-centers.js",
@@ -104,13 +104,13 @@
     },
     {
       "file": "src/text-edit-motions.js",
-      "bytes": 2068,
-      "gzip": 1035
+      "bytes": 2083,
+      "gzip": 1045
     },
     {
       "file": "src/text-motion-recipes.js",
-      "bytes": 4883,
-      "gzip": 1895
+      "bytes": 4954,
+      "gzip": 1907
     },
     {
       "file": "src/text-motion-programs.js",
@@ -119,18 +119,18 @@
     },
     {
       "file": "src/text-effect-options.js",
-      "bytes": 2309,
-      "gzip": 1052
+      "bytes": 2337,
+      "gzip": 1055
     },
     {
       "file": "src/text-effect-path.js",
-      "bytes": 2924,
-      "gzip": 1132
+      "bytes": 2985,
+      "gzip": 1141
     },
     {
       "file": "src/text-motion-primitives.js",
-      "bytes": 4764,
-      "gzip": 2022
+      "bytes": 4862,
+      "gzip": 2031
     },
     {
       "file": "src/text-motion-contour.js",
@@ -154,8 +154,8 @@
     },
     {
       "file": "src/dom-image-swap.js",
-      "bytes": 3310,
-      "gzip": 1316
+      "bytes": 3722,
+      "gzip": 1441
     },
     {
       "file": "src/dom-once.js",
@@ -179,8 +179,8 @@
     },
     {
       "file": "src/dom-text-surface.js",
-      "bytes": 22552,
-      "gzip": 7092
+      "bytes": 22605,
+      "gzip": 7056
     },
     {
       "file": "src/hybrid-text-flow.js",
@@ -189,13 +189,13 @@
     },
     {
       "file": "src/runtime-font-engine.js",
-      "bytes": 12202,
-      "gzip": 3758
+      "bytes": 12245,
+      "gzip": 3731
     },
     {
       "file": "src/font-rasterizer.js",
-      "bytes": 4384,
-      "gzip": 1544
+      "bytes": 4404,
+      "gzip": 1531
     },
     {
       "file": "src/native-run-shaping.js",
@@ -214,13 +214,13 @@
     },
     {
       "file": "src/text-edit-effect.js",
-      "bytes": 7704,
-      "gzip": 2580
+      "bytes": 7805,
+      "gzip": 2590
     },
     {
       "file": "src/insertion-range.js",
-      "bytes": 1858,
-      "gzip": 667
+      "bytes": 1887,
+      "gzip": 675
     },
     {
       "file": "src/text-motion-character-centers.js",
@@ -239,8 +239,8 @@
     },
     {
       "file": "src/dom-raster-cache.js",
-      "bytes": 1677,
-      "gzip": 793
+      "bytes": 1710,
+      "gzip": 800
     },
     {
       "file": "src/dom-rich-text.js",
@@ -274,8 +274,8 @@
     },
     {
       "file": "src/dom-free-script.js",
-      "bytes": 584,
-      "gzip": 357
+      "bytes": 760,
+      "gzip": 446
     },
     {
       "file": "src/dom-free-bootstrap.js",
@@ -289,8 +289,8 @@
     },
     {
       "file": "src/dom-free-loader.js",
-      "bytes": 593,
-      "gzip": 361
+      "bytes": 761,
+      "gzip": 448
     },
     {
       "file": "src/dom-free-loader.d.ts",
@@ -309,8 +309,8 @@
     },
     {
       "file": "src/dom-attachment.d.ts",
-      "bytes": 4537,
-      "gzip": 1404
+      "bytes": 4609,
+      "gzip": 1410
     },
     {
       "file": "assets/vendor/three-LICENSE.txt",
@@ -328,6 +328,6 @@
       "gzip": 1971
     }
   ],
-  "bytes": 974292,
-  "gzipSum": 280473
+  "bytes": 976567,
+  "gzipSum": 280968
 }

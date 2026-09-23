@@ -2,7 +2,7 @@
 
 The EV-RY marketing website is a real integration case: a four-product showcase, animated captions, one shared FX installation across client-side navigation, and native content at rest.
 
-The website is currently a local integration at `http://127.0.0.1:8780/`, not a hosted demo included in this package. The public runnable examples are linked from the package README. The website backend, forms and artwork are not dependencies of FX.
+The [EV-RY website](https://ev-ry.com/) and [FX product page](https://ev-ry.com/fx/) are public. This file describes an integration pattern, not a copy of the deployed website or a Free-only live demo. Try the package's separate [interactive Free demo](https://kbaghini.github.io/evry-fx/docs/) for its four fixed effects. The website backend, forms and artwork are not dependencies of FX.
 
 ## Initial reveal without a flash
 

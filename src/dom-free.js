@@ -1,3 +1,4 @@
+/** EV-RY FX Free (MIT) — https://ev-ry.com/fx/ */
 import {createDOMInstallation} from './dom-attachment.js';
 import {createAutoReveal} from './dom-auto-reveal.js';
 

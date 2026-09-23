@@ -1,6 +1,6 @@
-# EV-RY FX Free 0.1.0-rc.3 — نصب آزمایشی
+# EV-RY FX Free 0.1.0-rc.4 — نصب آزمایشی
 
-این نسخهٔ آزمایشی عمومی با مجوز MIT ارائه می‌شود. نام بسته در npm برابر @ev-ry/fx است.
+این نسخهٔ آزمایشی عمومی با مجوز MIT ارائه می‌شود. نام بسته در npm برابر @ev-ry/fx است. [صفحهٔ رسمی FX](https://ev-ry.com/fx/) و [دموی تعاملی Free](https://kbaghini.github.io/evry-fx/docs/) جداگانه در دسترس‌اند.
 
 ## روش script
 
@@ -34,7 +34,7 @@ H1/H2 خودکار انتخاب می‌شوند. برای تصویر `data-thd-i
 ## نصب با npm
 
 ```sh
-npm install ./thd-free-0.1.0-rc.3.tgz
+npm install @ev-ry/fx
 ```
 
 برای import از `@ev-ry/fx`، namespace سازگار THREE را خودتان ارائه کنید؛ نسخهٔ همراه script همان r158 است. راهنمای کامل API در docs/GUIDE.md قرار دارد.

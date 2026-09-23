@@ -1,14 +1,15 @@
-<p align="center"><img src="https://raw.githubusercontent.com/kbaghini/evry-fx/main/docs/assets/cover.svg" alt="EV-RY FX — Motion for the text and images already on your page." width="100%"></p>
+<p align="center"><a href="https://ev-ry.com/fx/"><img src="https://raw.githubusercontent.com/kbaghini/evry-fx/main/docs/assets/cover.svg" alt="EV-RY FX Free — visit the official FX website." width="100%"></a></p>
 
 <h1 align="center">EV-RY FX</h1>
 
 <p align="center"><strong>Your HTML. Four particle effects. Native when still.</strong></p>
 
-<p align="center">Free edition · 0.1.0-rc.3 preview · <a href="https://github.com/kbaghini/evry-fx/blob/main/LICENSE">MIT licensed</a> · JavaScript + TypeScript declarations</p>
+<p align="center">Free edition · 0.1.0-rc.4 preview · <a href="https://github.com/kbaghini/evry-fx/blob/main/LICENSE">MIT licensed</a> · JavaScript + TypeScript declarations</p>
 
 <p align="center">
+  <a href="https://ev-ry.com/fx/">Official FX website ↗</a> ·
+  <a href="https://kbaghini.github.io/evry-fx/docs/">See FX Free in action ↗</a> ·
   <a href="#quick-start">Quick start</a> ·
-  <a href="https://kbaghini.github.io/evry-fx/docs/">Live demo</a> ·
   <a href="https://github.com/kbaghini/evry-fx/blob/main/docs/GUIDE.md">Guide</a> ·
   <a href="https://github.com/kbaghini/evry-fx/blob/main/QUICKSTART.fa.md">راهنمای فارسی</a>
 </p>
@@ -21,7 +22,7 @@ Start with automatic scroll reveals, or attach selected elements through a small
 
 ![EV-RY FX motion preview](https://raw.githubusercontent.com/kbaghini/evry-fx/main/docs/assets/thd-preview.gif)
 
-The README shows an animated preview. Open the [live interactive demo](https://kbaghini.github.io/evry-fx/docs/) to try entry and exit effects on real text and images.
+The README shows an animated preview. Open the [live interactive Free demo](https://kbaghini.github.io/evry-fx/docs/) to try the four fixed effects on real text and images. [Other FX editions](https://ev-ry.com/fx/) are separate from this MIT-licensed package.
 
 ## What you get
 
@@ -38,7 +39,7 @@ The README shows an animated preview. Open the [live interactive demo](https://k
 
 ## Quick start
 
-**Public preview: 0.1.0-rc.3.** Validate the supported content and layouts in your project before production use.
+**Public preview: 0.1.0-rc.4.** Validate the supported content and layouts in your project before production use.
 
 Install from your project folder:
 
@@ -117,4 +118,4 @@ EV-RY FX Free is [MIT licensed](https://github.com/kbaghini/evry-fx/blob/main/LI
 
 ## Real integration: EV-RY website
 
-[See the EV-RY product-showcase integration](examples/evry-website.md): alternating snow/melt image transitions, animated captions and persistent-engine navigation. Includes initial-reveal and lifecycle guidance; the full website is currently a local integration.
+[See the EV-RY product-showcase integration](examples/evry-website.md): alternating snow/melt image transitions, animated captions and persistent-engine navigation. This is an integration recipe; the [public FX page](https://ev-ry.com/fx/) may use features beyond the four-effect Free demo.
